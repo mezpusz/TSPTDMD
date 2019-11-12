@@ -1,0 +1,56 @@
+\documentclass{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows,calc,shapes,backgrounds}
+
+\title{Heursitic Optimization Techniques\\186.814-2019W\\Programming exercise 1 report}
+\date{\today}
+\author{Marton Hajdu,\\matriculation number: 11849197}
+\begin{document}
+\maketitle
+\section*{Subtask 1}
+We get a relatively bad value if we select the largest weight edges and assign all of them to a single driver:
+$$\sqrt{\frac{1}{k}(L-\sum_{e\in\phi^{-1}(c_i)}{d_e})^2+\frac{1}{k}\sum_{i=2}^{k}{L^2}}$$
+The question is whether it is the worst case. Under the assumption that $L$ not close to the sum of $n$ maximum value edges selected for the tour, the first component of the square root decreases if we change any edge to a lower weight edge, and if we assign some edge to another driver, the first component decreases more than the second component can possibly increase.\medskip\\
+This means that selecting the first $n$ maximum weight edges and assigning them to a single driver gives an upper bound for the objective and any value greater than this $n$ maximum weight sum is a good value for $M$.
+\section*{Subtask 2}
+One simple deterministic construction heuristic is to pick $\frac{n}{k}$ edges for all $k$ drivers. We calculate the average of the to-be-added edge weights $A$ to get $\frac{n}{k}\cdot A$ close to $L$. We try to pick edges that have weight close to $A$ and which make no cycle with the edges already added. We assign these edges to drivers in a cyclic manner:
+\begin{algorithmic}[1]
+\Function{DeterministicConstruction}{E, k, L}
+\State $A \gets L*k/n$
+\State find index $i$ in $E$ with weight closest to $A$
+\State $j \gets i+1, l \gets 0$
+\While{less than $n$ edges are added}
+\If{$i \ge 0$ and $E[i]$ does not form a cycle with previous edges}
+\State add $E[i]$ to edge set and to $l$th driver
+\State $l \gets l + 1 \mod k$
+\EndIf
+\If{$j < m$ and $E[j]$ does not form a cycle with previous edges}
+\State add $E[j]$ to edge set and to $l$th driver
+\State $l \gets l + 1 \mod k$
+\EndIf
+\State $i \gets i - 1, j \gets j + 1$
+\EndWhile
+\EndFunction
+\end{algorithmic} 
+\section*{Solution representation}
+
+\section*{Delta evaluation}
+We store the following values:
+\begin{itemize}
+	\item the objective value $F$ without taking its square root
+	\item each value $S_i := \frac{1}{k}(L-\sum_{e\in\phi^{-1}(c_i)}{d_e})^2$ for the driver $i$ so that we can simply remove the squared value when something changes
+	\item the inner $D_i := L-\sum_{e\in\phi^{-1}(c_i)}$ for the $i$th driver so that we can create the updated squared value after a change
+\end{itemize}
+When the solution changes, one of the following happens:
+\begin{itemize}
+	\item remove an edge from a driver: $F = F - S_i$, then we remove the edge weight from $D_i$, $S_i = D_i^2$ and $F = F + S_i$.
+	\item assign an edge to a driver: $F = F - S_i$, then we add the edge weight to $D_i$, $S_i = D_i^2$ and $F = F + S_i$
+	\item change an edge of a driver to another edge: $F = F - S_i$, then we add the difference $w(e_{new}) - w(e_{old})$ of the edge weights to $D_i$, $S_i = D_i^2$ and $F = F + S_i$
+	\item chain of the above: when we change multiple edges at a driver, we only calculate $F$ and $S_i$ when all are added or when we change multiple driver assignments, we only calculate $F$ at the end
+\end{itemize}
+\end{document}
