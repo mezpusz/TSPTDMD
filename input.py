@@ -15,7 +15,7 @@ def edgelist(lines):
     for i in range(m):
         i, j, w = map(int, lines[i+1].split())
         vertices[i].append((j, w))
-        vertices[j].append((i, w))
+        #vertices[j].append((i, w))
     return vertices, k, L
 
 def coords(lines):
