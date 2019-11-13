@@ -10,9 +10,9 @@ vertices, k, L = parse_input(sys.argv[1])
 print("n={} k={} L={}".format(len(vertices), k, L))
 
 edgelist = []
-for u in range(len(vertices)-1):
-    for v, d in vertices[u]:
-        edgelist.append((u,v,d))
+for u in range(len(vertices)):
+    for v in range(u+1, len(vertices[u])):
+        edgelist.append((u,v,vertices[u][v]))
 edgelist = sorted(edgelist, key=lambda x: x[2])
 print(edgelist)
 

@@ -4,7 +4,7 @@ class Solution:
         self.chains = []
         self.num_edges = 0
         self.drivers = [Driver(L) for i in range(k)]
-        self.obj = L^2
+        self.obj = L ** 2
         self.loopback_edge = None
 
     def __str__(self):
@@ -38,7 +38,7 @@ class Edge:
 
 class Driver:
     def __init__(self, L):
-        self.obj_squared = L^2
+        self.obj_squared = L ** 2
         self.obj = L
 
 def insert_edge(solution, edge):
@@ -126,5 +126,5 @@ def update_objective(solution, driver_map):
         driver = solution.drivers[d]
         solution.obj -= driver.obj_squared
         driver.obj += change
-        driver.obj_squared = driver.obj^2
+        driver.obj_squared = driver.obj ** 2
         solution.obj += driver.obj_squared
