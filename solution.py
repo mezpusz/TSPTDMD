@@ -1,15 +1,19 @@
 
 class Solution:
-    def __init__(self, k):
+    def __init__(self, k, L):
         self.chains = []
         self.num_edges = 0
-        self.drivers = [Driver() for i in range(k)]
-        self.obj = 0
+        self.drivers = [Driver(L) for i in range(k)]
+        self.obj = L^2
+        self.loopback_edge = None
 
     def __str__(self):
-        res = "Chains "
+        res = "(objective=" + str(self.obj) + ",chains="
         for ch in self.chains:
             res += str(ch) + ";"
+        if self.loopback_edge != None:
+            res += str(self.loopback_edge)
+        res += ")"
         return res
 
 class Chain:
@@ -23,18 +27,19 @@ class Chain:
         return res
 
 class Edge:
-    def __init__(self, u, v, d):
+    def __init__(self, u, v, d, w):
         self.u = u
         self.v = v
         self.driver = d
+        self.w = w
 
     def __str__(self):
-        return "({},{})d={}".format(self.u, self.v, self.driver)
+        return "({},{})d={},w={}".format(self.u, self.v, self.driver, self.w)
 
 class Driver:
-    def __init__(self):
-        self.obj_squared = 0
-        self.obj = 0
+    def __init__(self, L):
+        self.obj_squared = L^2
+        self.obj = L
 
 def insert_edge(solution, edge):
     if solution.num_edges == 0:
@@ -73,6 +78,7 @@ def insert_edge(solution, edge):
         else:
             solution.chains.append(Chain(edge))
     solution.num_edges += 1
+    update_objective(solution, [(edge.driver, -edge.w)])
     return True
 
 def merge_chains(solution, ch1, ch2, edge):
@@ -110,3 +116,15 @@ def add_chain_edge(solution, ch, edge):
             edge.u, edge.v = edge.v, edge.u
         e.append(edge)
         return False
+
+def add_loopback_edge(solution, edge):
+    solution.loopback_edge = edge
+    update_objective(solution, [(edge.driver, -edge.w)])
+
+def update_objective(solution, driver_map):
+    for d, change in driver_map:
+        driver = solution.drivers[d]
+        solution.obj -= driver.obj_squared
+        driver.obj += change
+        driver.obj_squared = driver.obj^2
+        solution.obj += driver.obj_squared
