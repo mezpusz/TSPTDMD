@@ -1,5 +1,6 @@
 from input import parse_input
 from construction import construct_deterministic
+from search import local_search, first_improvement
 import sys
 
 if len(sys.argv) < 2:
@@ -16,4 +17,5 @@ for u in range(len(vertices)):
 edgelist = sorted(edgelist, key=lambda x: x[2])
 print(edgelist)
 
-construct_deterministic(edgelist, len(vertices), k, L)
+solution = construct_deterministic(edgelist, len(vertices), k, L)
+print("Result of local search: {}".format(local_search(vertices, solution, first_improvement, None, False)))

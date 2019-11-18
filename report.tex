@@ -49,7 +49,6 @@ A tricky part of the solution representation is to maintain a valid partial solu
 	\item It connect to two chains of edges. If the chains are the same, we don't insert the edge as it creates an invalid solution with a cycle of less than $n$ vertices. Otherwise we may need to connect the two chains, with possibly flipping one entirely, edge by edge:
 	$$(1,3),(3,6),(5,4),(4,8) \rightarrow (1,3),(3,6),{\color{red}(6,8),(8,4),(4,5)}$$
 \end{itemize}
-
 \section*{Delta evaluation}
 We store the following values:
 \begin{itemize}
