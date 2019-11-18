@@ -19,19 +19,28 @@ class Reversal(Neighborhood):
         if self.solution == None:
             return None
         orig_edges = self.solution.chains[0].edges
+        # Break the chain into two by removing two edges
+        # i and j are removed so the remaining are added
         chain1 = Chain(orig_edges, self.i+1, self.j-1)
         chain2 = Chain(orig_edges, self.j+1, self.i-1)
         newsol = copy.deepcopy(self.solution)
         newsol.chains = [chain1, chain2]
+        # The number of edges is decreased by 2,
+        # we later add these edges back
         newsol.num_edges = self.solution.num_edges-2
         v_i = orig_edges[self.i]
         v_j = orig_edges[self.j]
-        #print("i={},j={}".format(self.i, self.j))
-        #print("Before next: "+str(v_i)+str(v_j)+"  "+str(newsol))
+        # Add the first cross edge, consisting of
+        # the second vertices of the removed edges
         insert_edge(newsol, Edge(v_i.v, v_j.v, v_i.driver, self.edgelist[v_i.v][v_j.v]))
-        #print("During next: "+str(newsol))
+        # Add the second cross edge
         add_loopback_edge(newsol, Edge(v_i.u, v_j.u, v_j.driver, self.edgelist[v_i.u][v_j.u]))
-        #print("next: " + str(newsol))
+        # Update values for next iteration:
+        # * j should be always at least two positions away from i
+        #   otherwise the operation doesn't make sense
+        # * all operations are modulo the cycle length
+        # * when the neighborhood is traversed, solution becomes
+        #   None, so the next iteration won't give anything
         if (self.j + 2) % self.solution.num_edges == self.i:
             self.i += 1
             self.i %= self.solution.num_edges
