@@ -1,6 +1,8 @@
 
 class Solution:
     def __init__(self, k, L):
+        # A list of chains of edges, since an unfinished solution
+        # might not be constructed as one single continuous chain
         self.chains = []
         self.num_edges = 0
         self.drivers = [Driver(L) for i in range(k)]
@@ -102,8 +104,8 @@ def reverse_chain(solution, ch):
         e.u, e.v = e.v, e.u
     solution.chains[ch].edges = solution.chains[ch].edges.reverse()
 
-# returns whether the edge was added in
-# front or to the back of the chain
+# Returns True if the edge is added to the front
+# and false if it is added to the back
 def add_chain_edge(solution, ch, edge):
     e = solution.chains[ch].edges
     if e[0].u == edge.u or e[0].u == edge.v:

@@ -60,6 +60,7 @@ def construct_deterministic(edgelist, n, k, L):
     add_loopback_edge(sol, Edge(loopback_edge[0], loopback_edge[1], l, loopback_edge[2]))
     print("solution={}".format(sol))
 
+# NOt working yet
 def construct_random(edgelist, n, k, L):
     s = Solution(k, L)
     i = randint(0, len(edgelist)-1)
