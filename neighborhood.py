@@ -50,3 +50,28 @@ class Reversal(Neighborhood):
         else:
             self.j = (self.j + 1) % self.solution.num_edges
         return newsol
+
+class ExchangeDriver(Neighborhood):
+    def __init__(self, solution, k):
+        self.solution = solution
+        self.i = 0
+        self.j = 1
+
+    def next(self):
+        if self.solution == None:
+            return None
+        newsol = copy.deepcopy(self.solution)
+        e_i = newsol.chains[0].edges[self.i]
+        e_j = newsol.chains[0].edges[self.j]
+        e_i.d, e_j.d = e_j.d, e_i.d
+        # Update values for next iteration:
+        # * when the neighborhood is traversed, solution becomes
+        #   None, so the next iteration won't give anything
+        if self.j + 1 == self.solution.num_edges:
+            self.i += 1
+            if self.i == self.solution.num_edges:
+                self.solution = None
+            self.j = self.i + 1
+        else:
+            self.j += 1
+        return newsol
