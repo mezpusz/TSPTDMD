@@ -1,5 +1,6 @@
 from solution import Chain, Edge, insert_edge, add_loopback_edge
 import copy
+from random import randint
 
 class Neighborhood():
     def next(self):
@@ -51,6 +52,20 @@ class Reversal(Neighborhood):
             self.j = (self.j + 1) % self.solution.num_edges
         return newsol
 
+    def random(self):
+        old_i = self.i
+        old_j = self.j
+        num_edges = self.solution.num_edges
+        self.i = randint(0, num_edges-1)
+        self.j = randint(0, num_edges-1)
+        while (self.j + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
+            self.i = randint(0, num_edges-1)
+            self.j = randint(0, num_edges-1)
+        newsol = next()
+        self.i = old_i
+        self.j = old_j
+        return newsol
+
 class ShortBlockMove(Neighborhood):
     def __init__(self, solution, edgelist):
         self.solution = solution
@@ -93,7 +108,7 @@ class ShortBlockMove(Neighborhood):
         # * all operations are modulo the cycle length
         # * when the neighborhood is traversed, solution becomes
         #   None, so the next iteration won't give anything
-        if (self.j + self.l + 1) % num_edges == self.i:
+        if (self.j + self.l + 2) % num_edges == self.i:
             self.i += 1
             self.i %= num_edges
             self.j = (self.i + 2) % num_edges
@@ -101,6 +116,20 @@ class ShortBlockMove(Neighborhood):
                 self.solution = None
         else:
             self.j = (self.j + 1) % num_edges
+        return newsol
+
+    def random(self):
+        old_i = self.i
+        old_j = self.j
+        num_edges = self.solution.num_edges
+        self.i = randint(0, num_edges-1)
+        self.j = randint(0, num_edges-1)
+        while (self.j + self.l + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
+            self.i = randint(0, num_edges-1)
+            self.j = randint(0, num_edges-1)
+        newsol = next()
+        self.i = old_i
+        self.j = old_j
         return newsol
 
 class ExchangeDriver(Neighborhood):
@@ -126,4 +155,18 @@ class ExchangeDriver(Neighborhood):
             self.j = self.i + 1
         else:
             self.j += 1
+        return newsol
+
+    def random(self):
+        old_i = self.i
+        old_j = self.j
+        num_edges = self.solution.num_edges
+        self.i = randint(0, num_edges-1)
+        self.j = randint(0, num_edges-1)
+        while self.j == self.i:
+            self.i = randint(0, num_edges-1)
+            self.j = randint(0, num_edges-1)
+        newsol = next()
+        self.i = old_i
+        self.j = old_j
         return newsol
