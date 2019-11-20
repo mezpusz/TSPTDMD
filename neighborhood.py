@@ -51,6 +51,58 @@ class Reversal(Neighborhood):
             self.j = (self.j + 1) % self.solution.num_edges
         return newsol
 
+class ShortBlockMove(Neighborhood):
+    def __init__(self, solution, edgelist):
+        self.solution = solution
+        self.edgelist = edgelist
+        self.i = 0
+        self.j = 2
+        self.l = 3
+        # Sanity check to see whether the operation makes sense at all
+        if (self.j + self.l + 1) >= self.solution.num_edges:
+            self.solution = None
+
+    def next(self):
+        if self.solution == None:
+            return None
+        orig_edges = self.solution.chains[0].edges
+        num_edges = self.solution.num_edges
+        # Break the chain into two by removing two edges
+        # i and j are removed so the remaining are added
+        chain1 = Chain(orig_edges, self.i+1, self.j-1)
+        chain2 = Chain(orig_edges, self.j+1, (self.j+self.l-1) % num_edges)
+        chain3 = Chain(orig_edges, (self.j+self.l+1) % num_edges, self.i-1)
+        newsol = copy.deepcopy(self.solution)
+        newsol.chains = [chain1, chain2, chain3]
+        # The number of edges is decreased by 3,
+        # we later add these edges back
+        newsol.num_edges = num_edges-3
+        v_i = orig_edges[self.i]
+        v_j = orig_edges[self.j]
+        v_k = orig_edges[(self.j+self.l) % num_edges]
+        # Insert block at position i
+        insert_edge(newsol, Edge(v_i.u, v_j.v, v_i.driver, self.edgelist[v_i.u][v_j.v]))
+        insert_edge(newsol, Edge(v_k.u, v_i.v, v_k.driver, self.edgelist[v_k.u][v_i.v]))
+        # Add missing edge where the block was before
+        add_loopback_edge(newsol, Edge(v_j.u, v_k.v, v_j.driver, self.edgelist[v_j.u][v_k.v]))
+        print('next: i={},j={},sol={}'.format(self.i, self.j, newsol))
+        # Update values for next iteration:
+        # * j starts two positions away from i and it goes
+        #   until the removed edge after the block is the
+        #   same as i otherwise it doesn't make sense
+        # * all operations are modulo the cycle length
+        # * when the neighborhood is traversed, solution becomes
+        #   None, so the next iteration won't give anything
+        if (self.j + self.l + 1) % num_edges == self.i:
+            self.i += 1
+            self.i %= num_edges
+            self.j = (self.i + 2) % num_edges
+            if self.i == 0 and self.j == 2:
+                self.solution = None
+        else:
+            self.j = (self.j + 1) % num_edges
+        return newsol
+
 class ExchangeDriver(Neighborhood):
     def __init__(self, solution, k):
         self.solution = solution
