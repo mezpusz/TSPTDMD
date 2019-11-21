@@ -63,12 +63,13 @@ def construct_deterministic(edgelist, n, k, L):
 
 # NOt working yet
 def construct_random(edgelist, n, k, L):
-    s = Solution(k, L)
+    sol = Solution(k, L)
     i = randint(0, len(edgelist)-1)
+    l = randint(0, k-1)
 
     # insert random edge
-    while s.num_edges < n-1:
-        if insert_edge(s, Edge(edgelist[i][0], edgelist[i][1], l, edgelist[i][2])):
-            # evaluate here
-            l = (l + 1) % k  # next driver
+    while sol.num_edges < n-1:
+        insert_edge(sol, Edge(edgelist[i][0], edgelist[i][1], l, edgelist[i][2]))
         i = randint(0, len(edgelist)-1)
+        l = randint(0, k-1)
+    return sol

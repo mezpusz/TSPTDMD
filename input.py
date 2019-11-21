@@ -40,5 +40,17 @@ def edgelist(lines):
 # Not working yet
 def coords(lines):
     n, k, L = map(int, lines[0].split())
-    vertices = [[] for i in range(n)]
+    coordinates = []
+    vertices = [[-1 for j in range(n)] for i in range(n)]
+    for i in range(n):
+        x, y = map(int, lines[i+1].split())
+        coordinates.append((x,y))
+    for i in range(n):
+        for j in range(i+1, n):
+            dist_x = (coordinates[i][0] - coordinates[j][0])**2
+            dist_y = (coordinates[i][1] - coordinates[j][1])**2
+            dist = math.sqrt(dist_x+dist_y)
+            #TODO: look out for rounding here
+            vertices[i][j] = int(dist)
+            vertices[i][j] = int(dist)
     return vertices, k, L
