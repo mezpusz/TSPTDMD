@@ -27,14 +27,17 @@ edgelist = sorted(edgelist, key=lambda x: x[2])
 
 neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
 
+local_iterations = 100
+grasp_iterations = 100
+
 heuristic = sys.argv[3]
 if heuristic == "local_search" or heuristic == "ls":
     solution = construct_deterministic(edgelist, len(vertices), k, L)
-    solution = local_search(solution, best_improvement, neighborhood_factory, 100)
+    solution = local_search(solution, best_improvement, neighborhood_factory, local_iterations)
 elif heuristic == "grasp":
     random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
-    grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, 100)
-    solution = grasp(random_constructor, grasp_local_search, 500)
+    grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, local_iterations)
+    solution = grasp(random_constructor, grasp_local_search, grasp_iterations)
 elif heuristic == "vnd":
     solution = construct_deterministic(edgelist, len(vertices), k, L)
     solution = vnd(solution, neighborhood_factory)
