@@ -72,3 +72,9 @@ def construct_random(edgelist, n, k, L):
         i = randint(0, len(edgelist)-1)
         l = randint(0, k-1)
     return sol
+
+# Takes the input to construct random and returns a function that
+# generates new random solutions without having to resupply the arguments.
+# Created so we don't have to supply the arguments to grasp as well
+def construct_random_from_given_inputs(edgelist,n,k,L):
+    return lambda: construct_random(edgelist,n,k,L)
