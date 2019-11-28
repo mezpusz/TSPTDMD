@@ -6,8 +6,9 @@ from random import randint
 # k = nr. of drivers
 # L = desired travel distance for each driver
 def construct_deterministic(edgelist, n, k, L):
+    print('Constructing solution deterministically')
     # A = desired average travel distance to each node
-    A = L*k/n
+    A = int(L*k/n)
     i = 0
 
     # i is set to index of last edge with weight < A
@@ -31,19 +32,23 @@ def construct_deterministic(edgelist, n, k, L):
     # Stop when still need to add the last edge that turns the graph into a cycle.
     while sol.num_edges < n-1:
         # Try to add edge with weight just below A
-        if i >= 0 and insert_edge(sol, Edge(edgelist[i][0], edgelist[i][1], l, edgelist[i][2])):
-            l = (l + 1) % k   # Next drier
-        print("i={},j={},solution={}".format(i,j,sol))
-
-        # Try to add the edge with weight just above A
-        if j < len(edgelist) and insert_edge(sol, Edge(edgelist[j][0], edgelist[j][1], l, edgelist[i][2])):
+        index = -1
+        if i >= 0 and j < len(edgelist):
+            if abs(edgelist[i][2] - A) < abs(edgelist[j][2] - A):
+                index = i
+                i -= 1
+            else:
+                index = j
+                j += 1
+        elif i >= 0:
+            index = i
+            i -= 1
+        else:
+            index = j
+            j += 1
+        if insert_edge(sol, Edge(edgelist[index][0], edgelist[index][1], l, edgelist[index][2])):
             l = (l + 1) % k   # Next driver
-        print("i={},j={},solution={}".format(i,j,sol))
-
-        # update i and j to reflect that we've added 2 more edges to the solution
-        # or that that edge is unable to be added anyway
-        i = i-1
-        j = j+1
+        #print("i={},j={},obj={}".format(i,j,sol.obj))
 
     # The solution maintains a set of chains of edges
     # that should've consolidated into one single chain now.
@@ -62,6 +67,7 @@ def construct_deterministic(edgelist, n, k, L):
     return sol
 
 def construct_random(edgelist, n, k, L):
+    print('Constructing solution randomly')
     sol = Solution(k, L)
     i = randint(0, len(edgelist)-1)
     l = randint(0, k-1)

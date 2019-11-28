@@ -85,7 +85,7 @@ def insert_edge(solution, edge):
         else:
             solution.chains.append(Chain([edge], 0, 0))
     solution.num_edges += 1
-    update_objective(solution, [(edge.driver, -edge.w)])
+    update_objective(solution, [(edge.driver, edge.w)])
     return True
 
 def merge_chains(solution, ch1, ch2, edge):
@@ -94,6 +94,7 @@ def merge_chains(solution, ch1, ch2, edge):
     e2 = solution.chains[ch2].edges
     front = add_chain_edge(solution, ch1, edge)
 
+    #TODO: reverse the shorter chain
     if front:
         if e2[-1].v != e1[0].u:
             reverse_chain(solution, ch2)
@@ -132,12 +133,13 @@ def add_loopback_edge(solution, edge):
         edge.u, edge.v = edge.v, edge.u
     solution.chains[0].edges.append(edge)
     solution.num_edges += 1
-    update_objective(solution, [(edge.driver, -edge.w)])
+    update_objective(solution, [(edge.driver, edge.w)])
 
 def update_objective(solution, driver_map):
+    k = len(solution.drivers)
     for d, change in driver_map:
         driver = solution.drivers[d]
-        solution.obj -= driver.obj_squared
-        driver.obj += change
+        solution.obj -= int(driver.obj_squared/k)
+        driver.obj -= change
         driver.obj_squared = driver.obj ** 2
-        solution.obj += driver.obj_squared
+        solution.obj += int(driver.obj_squared/k)

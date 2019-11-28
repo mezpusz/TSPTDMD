@@ -1,4 +1,4 @@
-from solution import Chain, Edge, insert_edge, add_loopback_edge
+from solution import Chain, Edge, insert_edge, add_loopback_edge, update_objective
 import copy
 from random import randint
 
@@ -55,6 +55,7 @@ class Reversal(Neighborhood):
         newsol.num_edges = self.solution.num_edges-2
         v_i = orig_edges[self.i]
         v_j = orig_edges[self.j]
+        update_objective(newsol, [(v_i.driver, -v_i.w), (v_j.driver, -v_j.w)])
         # Add the first cross edge, consisting of
         # the second vertices of the removed edges
         insert_edge(newsol, Edge(v_i.v, v_j.v, v_i.driver, self.edgelist[v_i.v][v_j.v]))
@@ -119,12 +120,17 @@ class ShortBlockMove(Neighborhood):
         v_i = orig_edges[self.i]
         v_j = orig_edges[self.j]
         v_k = orig_edges[(self.j+self.l) % num_edges]
+        update_objective(newsol,
+            [(v_i.driver, -v_i.w),
+             (v_j.driver, -v_j.w),
+             (v_k.driver, -v_k.w)])
+
         # Insert block at position i
         insert_edge(newsol, Edge(v_i.u, v_j.v, v_i.driver, self.edgelist[v_i.u][v_j.v]))
         insert_edge(newsol, Edge(v_k.u, v_i.v, v_k.driver, self.edgelist[v_k.u][v_i.v]))
         # Add missing edge where the block was before
         add_loopback_edge(newsol, Edge(v_j.u, v_k.v, v_j.driver, self.edgelist[v_j.u][v_k.v]))
-        print('next: i={},j={},sol={}'.format(self.i, self.j, newsol))
+        #print('next: i={},j={},sol={}'.format(self.i, self.j, newsol))
         # Update values for next iteration:
         # * j starts two positions away from i and it goes
         #   until the removed edge after the block is the
@@ -168,6 +174,7 @@ class ExchangeDriver(Neighborhood):
         newsol = copy.deepcopy(self.solution)
         e_i = newsol.chains[0].edges[self.i]
         e_j = newsol.chains[0].edges[self.j]
+        update_objective(newsol, [(e_i.driver, e_j.w-e_i.w), (e_j.driver, e_i.w-e_j.w)])
         e_i.driver, e_j.driver = e_j.driver, e_i.driver
         # Update values for next iteration:
         # * when the neighborhood is traversed, solution becomes
