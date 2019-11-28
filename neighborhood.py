@@ -168,7 +168,7 @@ class ExchangeDriver(Neighborhood):
         newsol = copy.deepcopy(self.solution)
         e_i = newsol.chains[0].edges[self.i]
         e_j = newsol.chains[0].edges[self.j]
-        e_i.d, e_j.d = e_j.d, e_i.d
+        e_i.driver, e_j.driver = e_j.driver, e_i.driver
         # Update values for next iteration:
         # * when the neighborhood is traversed, solution becomes
         #   None, so the next iteration won't give anything
