@@ -2,6 +2,7 @@ from input import parse_input
 from construction import construct_deterministic, construct_random
 from search import local_search, best_improvement
 from neighborhood import NeighborhoodFactory
+from vnd import vnd
 import logging, sys
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 

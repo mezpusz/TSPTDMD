@@ -14,8 +14,8 @@ class NeighborhoodFactory():
         else:
             raise Exception("No such neighborhood: {}".format(name))
 
-    def set_next(self):
-        self.index += 1
+    def set_index(self, i):
+        self.index = i
         self.index %= 3
 
     def get(self, solution):
@@ -168,13 +168,13 @@ class ExchangeDriver(Neighborhood):
         newsol = copy.deepcopy(self.solution)
         e_i = newsol.chains[0].edges[self.i]
         e_j = newsol.chains[0].edges[self.j]
-        e_i.d, e_j.d = e_j.d, e_i.d
+        e_i.driver, e_j.driver = e_j.driver, e_i.driver
         # Update values for next iteration:
         # * when the neighborhood is traversed, solution becomes
         #   None, so the next iteration won't give anything
         if self.j + 1 == self.solution.num_edges:
             self.i += 1
-            if self.i == self.solution.num_edges:
+            if self.i == self.solution.num_edges-1:
                 self.solution = None
             self.j = self.i + 1
         else:
