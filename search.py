@@ -1,16 +1,13 @@
-from neighborhood import Reversal, ShortBlockMove
 
-def local_search(edgelist, solution, step_fnc, neighborhood_gen, stopping_criteria):
-    neighborhood = ShortBlockMove(solution, edgelist)
+def local_search(solution, step_fnc, neighborhood_factory):
     best = solution
     i = 0
-    while i < 100 and not stopping_criteria:
-        new_sol = step_fnc(best, neighborhood)
+    while i < 100:
+        new_sol = step_fnc(best, neighborhood_factory.get_default(best))
         if new_sol < best:
             best = new_sol
         else:
             return best
-        neighborhood = ShortBlockMove(best, edgelist)
         i += 1
     return solution
 
@@ -33,5 +30,4 @@ def best_improvement(solution, neighborhood):
             best = new
 
 def random(solution, neighborhood):
-    neighborhood = neighborhood(solution)
     return neighborhood.random()

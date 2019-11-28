@@ -2,6 +2,31 @@ from solution import Chain, Edge, insert_edge, add_loopback_edge
 import copy
 from random import randint
 
+class NeighborhoodFactory():
+    def __init__(self, edgelist, default):
+        self.edgelist = edgelist
+        self.default = default
+
+    def get_by_index(self, i, solution):
+        if i == 0:
+            return ExchangeDriver(solution)
+        elif i == 1:
+            return ShortBlockMove(solution, self.edgelist)
+        elif i == 2:
+            return Reversal(solution, self.edgelist)
+        else:
+            raise Exception("Index out of range for neighborhoods")
+
+    def get_default(self, solution):
+        if self.default == 'ExchangeDriver':
+            return ExchangeDriver(solution)
+        elif self.default == 'ShortBlockMove':
+            return ShortBlockMove(solution, self.edgelist)
+        elif self.default == 'Reversal':
+            return Reversal(solution, self.edgelist)
+        else:
+            raise Exception("No such neighborhood: {}".format(self.default))
+
 class Neighborhood():
     def next(self):
         raise Exception("Not implemented")
@@ -133,7 +158,7 @@ class ShortBlockMove(Neighborhood):
         return newsol
 
 class ExchangeDriver(Neighborhood):
-    def __init__(self, solution, k):
+    def __init__(self, solution):
         self.solution = solution
         self.i = 0
         self.j = 1
