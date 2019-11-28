@@ -54,7 +54,5 @@ res += '\n'
 print(res)
 with open(basename+'_'+heuristic+'_results.txt', 'a') as f:
     f.write(res)
-with open(basename+'_'+heuristic+'_results-full.txt', 'a') as f:
-    f.write(res+'\n'+str(int(math.sqrt(solution.obj)))+'\n')
 logging.debug(solution.obj)
 logging.debug(math.sqrt(solution.obj))
