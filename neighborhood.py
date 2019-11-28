@@ -174,11 +174,13 @@ class ExchangeDriver(Neighborhood):
         #   None, so the next iteration won't give anything
         if self.j + 1 == self.solution.num_edges:
             self.i += 1
-            if self.i == self.solution.num_edges:
-                self.solution = None
             self.j = self.i + 1
+            # I added + 1 because otherwise self.j would be self.solution.num_edges
+            if self.i + 1 == self.solution.num_edges:
+                self.solution = None
         else:
             self.j += 1
+
         return newsol
 
     def random(self):

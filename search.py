@@ -1,4 +1,3 @@
-
 def local_search(solution, step_fnc, neighborhood_factory):
     best = solution
     i = 0
@@ -11,6 +10,8 @@ def local_search(solution, step_fnc, neighborhood_factory):
         i += 1
     return solution
 
+# Take the last two arguments and return a function
+# that only needs the solution to run local search.
 def local_search_partially_applied (step_fnc, neighborhood_factory):
     return lambda solution: local_search(solution, step_fnc, neighborhood_factory)
 

@@ -25,12 +25,12 @@ edgelist = sorted(edgelist, key=lambda x: x[2])
 logging.debug(edgelist)
 
 neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
-solution = construct_deterministic(edgelist, len(vertices), k, L)
-solution = local_search(solution, best_improvement, neighborhood_factory)
+#solution = construct_deterministic(edgelist, len(vertices), k, L)
+#solution = local_search(solution, best_improvement, neighborhood_factory)
 
-#random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
-#grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory)
-#solution = grasp(random_constructor, grasp_local_search, 500)
+random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
+grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory)
+solution = grasp(random_constructor, grasp_local_search, 500)
 
 
 res = ""
