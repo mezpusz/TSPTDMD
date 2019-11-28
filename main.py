@@ -3,6 +3,7 @@ from construction import construct_deterministic, construct_random, construct_ra
 from search import local_search, local_search_partially_applied, best_improvement, first_improvement
 from neighborhood import NeighborhoodFactory
 from grasp import grasp
+from vnd import vnd
 import logging, sys
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -29,10 +30,10 @@ neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
 heuristic = sys.argv[3]
 if heuristic == "local_search":
     solution = construct_deterministic(edgelist, len(vertices), k, L)
-    solution = local_search(solution, best_improvement, neighborhood_factory)
+    solution = local_search(solution, best_improvement, neighborhood_factory, 100)
 elif heuristic == "grasp":
     random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
-    grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory)
+    grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, 100)
     solution = grasp(random_constructor, grasp_local_search, 500)
 
 

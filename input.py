@@ -1,6 +1,7 @@
 import math
 
 def parse_input(filename):
+    print('Parsing input...')
     with open(filename, 'r') as f:
         lines = f.readlines()
         if str.startswith(lines[0], 'EDGELIST'):
@@ -25,11 +26,8 @@ def edgelist(lines):
     M = L
     for i in range(n):
         M -= weights[i]
-
-    # Let M be a value larger than any of the existing weights
-    M = math.ceil((M ** 2 + (k-1)*L ** 2)/k)
-    print("M=" + str(M))
-    # and assign it to invalid edges:
+    M = math.ceil((M ** 2 + (k-1)*(L ** 2))/k)
+    #print("M=" + str(M))
     for u in vertices:
         for v in range(len(u)):
             if u[v] == -1:
