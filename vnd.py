@@ -1,12 +1,11 @@
 
 from search import local_search, best_improvement
-from neighborhood import neighborhoods
 
 def vnd(solution, neighborhood_factory):
     print('Starting VND...')
     l = 0
     best = solution
-    while l < len(neighborhoods):
+    while l < 4:
         neighborhood_factory.set_index(l)
         new = local_search(best, best_improvement, neighborhood_factory, 1)
         if new < best:
