@@ -1,5 +1,5 @@
-def grasp(random_heuristic, edgelist,,stop):
-    best_sol = None
+def grasp(random_heuristic, local_search, stop):
+    best_sol = local_search(random_heuristic())
     counter = 0
     while counter < stop:
         new_sol = local_search(random_heuristic())

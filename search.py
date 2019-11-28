@@ -11,6 +11,9 @@ def local_search(solution, step_fnc, neighborhood_factory):
         i += 1
     return solution
 
+def local_search_partially_applied (step_fnc, neighborhood_factory):
+    return lambda solution: local_search(solution, step_fnc, neighborhood_factory)
+
 # step functions
 def first_improvement(solution, neighborhood):
     while True:
