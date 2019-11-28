@@ -3,7 +3,7 @@ def local_search(solution, step_fnc, neighborhood_factory):
     best = solution
     i = 0
     while i < 100:
-        new_sol = step_fnc(best, neighborhood_factory.get_default(best))
+        new_sol = step_fnc(best, neighborhood_factory.get(best))
         if new_sol < best:
             best = new_sol
         else:

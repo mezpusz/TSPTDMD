@@ -3,29 +3,28 @@ import copy
 from random import randint
 
 class NeighborhoodFactory():
-    def __init__(self, edgelist, default):
+    def __init__(self, edgelist, name):
         self.edgelist = edgelist
-        self.default = default
-
-    def get_by_index(self, i, solution):
-        if i == 0:
-            return ExchangeDriver(solution)
-        elif i == 1:
-            return ShortBlockMove(solution, self.edgelist)
-        elif i == 2:
-            return Reversal(solution, self.edgelist)
+        if name == 'ExchangeDriver':
+            self.index = 0
+        elif name == 'ShortBlockMove':
+            self.index = 1
+        elif name == 'Reversal':
+            self.index = 2
         else:
-            raise Exception("Index out of range for neighborhoods")
+            raise Exception("No such neighborhood: {}".format(name))
 
-    def get_default(self, solution):
-        if self.default == 'ExchangeDriver':
+    def set_next(self):
+        self.index += 1
+        self.index %= 3
+
+    def get(self, solution):
+        if self.index == 0:
             return ExchangeDriver(solution)
-        elif self.default == 'ShortBlockMove':
+        elif self.index == 1:
             return ShortBlockMove(solution, self.edgelist)
-        elif self.default == 'Reversal':
-            return Reversal(solution, self.edgelist)
         else:
-            raise Exception("No such neighborhood: {}".format(self.default))
+            return Reversal(solution, self.edgelist)
 
 class Neighborhood():
     def next(self):
