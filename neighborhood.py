@@ -1,3 +1,4 @@
+import logging
 from solution import Chain, Edge, insert_edge, add_loopback_edge
 import copy
 from random import randint
@@ -118,7 +119,7 @@ class ShortBlockMove(Neighborhood):
         newsol.num_edges = num_edges-3
         v_i = orig_edges[self.i]
         v_j = orig_edges[self.j]
-        v_k = orig_edges[(self.j+self.l) % num_edges]
+        v_k = orig_edges[(self.j+self.l) % (num_edges)]
         # Insert block at position i
         insert_edge(newsol, Edge(v_i.u, v_j.v, v_i.driver, self.edgelist[v_i.u][v_j.v]))
         insert_edge(newsol, Edge(v_k.u, v_i.v, v_k.driver, self.edgelist[v_k.u][v_i.v]))
@@ -156,6 +157,8 @@ class ShortBlockMove(Neighborhood):
         self.j = old_j
         return newsol
 
+# The neighborhood consist of keeping the same route,
+# but switching pairs of drivers
 class ExchangeDriver(Neighborhood):
     def __init__(self, solution):
         self.solution = solution

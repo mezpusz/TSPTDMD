@@ -1,6 +1,6 @@
 from input import parse_input
 from construction import construct_deterministic, construct_random, construct_random_from_given_inputs
-from search import local_search, local_search_partially_applied, best_improvement
+from search import local_search, local_search_partially_applied, best_improvement, first_improvement
 from neighborhood import NeighborhoodFactory
 from grasp import grasp
 import logging, sys
