@@ -9,3 +9,5 @@ def grasp(random_heuristic, local_search, stop):
         if new_sol < best_sol:
             best_sol = new_sol
         counter += 1
+
+    return best_sol

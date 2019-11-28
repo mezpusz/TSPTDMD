@@ -10,8 +10,8 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 from random import seed
 seed()
 
-if len(sys.argv) < 3:
-    logging.error('Help: main.py [filename] [neighborhood]')
+if len(sys.argv) < 4:
+    logging.error('Help: main.py [filename] [neighborhood] [heuristic]')
     exit(-1)
 
 vertices, k, L = parse_input(sys.argv[1])
@@ -25,12 +25,15 @@ edgelist = sorted(edgelist, key=lambda x: x[2])
 logging.debug(edgelist)
 
 neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
-#solution = construct_deterministic(edgelist, len(vertices), k, L)
-#solution = local_search(solution, best_improvement, neighborhood_factory)
 
-random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
-grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory)
-solution = grasp(random_constructor, grasp_local_search, 500)
+heuristic = sys.argv[3]
+if heuristic == "local_search":
+    solution = construct_deterministic(edgelist, len(vertices), k, L)
+    solution = local_search(solution, best_improvement, neighborhood_factory)
+elif heuristic == "grasp":
+    random_constructor = construct_random_from_given_inputs(edgelist, len(vertices), k, L)
+    grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory)
+    solution = grasp(random_constructor, grasp_local_search, 500)
 
 
 res = ""
