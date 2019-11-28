@@ -8,21 +8,25 @@ class NeighborhoodFactory():
         self.edgelist = edgelist
         if name == 'ExchangeDriver' or name == "ed":
             self.index = 0
-        elif name == 'ShortBlockMove' or name == 'sbm':
+        elif name == 'DriverReversal' or name == 'dr':
             self.index = 1
-        elif name == 'Reversal':
+        elif name == 'ShortBlockMove' or name == 'sbm':
             self.index = 2
+        elif name == 'Reversal':
+            self.index = 3
         else:
             raise Exception("No such neighborhood: {}".format(name))
 
     def set_index(self, i):
         self.index = i
-        self.index %= 3
+        self.index %= 4
 
     def get(self, solution):
         if self.index == 0:
             return ExchangeDriver(solution)
-        elif self.index == 1:
+        if self.index == 1:
+            return DriverReversal(solution)
+        elif self.index == 2:
             return ShortBlockMove(solution, self.edgelist)
         else:
             return Reversal(solution, self.edgelist)
@@ -200,6 +204,55 @@ class ExchangeDriver(Neighborhood):
         self.i = randint(0, num_edges-1)
         self.j = randint(0, num_edges-1)
         while self.j == self.i:
+            self.i = randint(0, num_edges-1)
+            self.j = randint(0, num_edges-1)
+        newsol = next()
+        self.i = old_i
+        self.j = old_j
+        return newsol
+
+class DriverReversal(Neighborhood):
+    def __init__(self, solution):
+        self.solution = solution
+        self.i = 0
+        self.j = 2
+
+    def next(self):
+        if self.solution == None:
+            return None
+        newsol = copy.deepcopy(self.solution)
+        k = self.i
+        l = self.j
+        while k < l:
+            e_k = newsol.chains[0].edges[k]
+            e_l = newsol.chains[0].edges[l]
+            update_objective(newsol, [(e_k.driver, e_l.w-e_k.w), (e_l.driver, e_k.w-e_l.w)])
+            e_k.driver, e_l.driver = e_l.driver, e_k.driver
+            k+=1
+            l-=1
+        # Update values for next iteration:
+        # * j should be always at least two positions away from i
+        #   otherwise the operation doesn't make sense
+        # * all operations are modulo the cycle length
+        # * when the neighborhood is traversed, solution becomes
+        #   None, so the next iteration won't give anything
+        if (self.j + 2) % self.solution.num_edges == self.i:
+            self.i += 1
+            self.i %= self.solution.num_edges
+            self.j = (self.i + 2) % self.solution.num_edges
+            if self.i == 0 and self.j == 2:
+                self.solution = None
+        else:
+            self.j = (self.j + 1) % self.solution.num_edges
+        return newsol
+
+    def random(self):
+        old_i = self.i
+        old_j = self.j
+        num_edges = self.solution.num_edges
+        self.i = randint(0, num_edges-1)
+        self.j = randint(0, num_edges-1)
+        while (self.j + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
         newsol = next()

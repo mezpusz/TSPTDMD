@@ -7,7 +7,7 @@ def local_search(solution, step_fnc, neighborhood_factory, iterations):
         if new_sol < best:
             best = new_sol
         else:
-            return best
+            break
         i += 1
     return best
 
@@ -33,9 +33,10 @@ def best_improvement(solution, neighborhood):
         i+=1
         if new == None:
             print("Found {} neighbors".format(i))
-            return best
+            break
         elif new < best:
             best = new
+    return best
 
 def random(solution, neighborhood):
     return neighborhood.random()

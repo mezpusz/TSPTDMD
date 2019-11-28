@@ -96,24 +96,28 @@ def merge_chains(solution, ch1, ch2, edge):
     e2 = solution.chains[ch2].edges
     front = add_chain_edge(solution, ch1, edge)
 
-    #TODO: reverse the shorter chain
     if front:
         if e2[-1].v != e1[0].u:
-            reverse_chain(solution, ch2)
+            if len(e2) > len(e1):
+                reverse_chain(solution, ch1)
+                e1, e2 = e2, e1
+            else:
+                reverse_chain(solution, ch2)
         solution.chains[ch1].edges = e2 + e1
     else:
         if e2[0].u != e1[-1].v:
-            reverse_chain(solution, ch2)
+            if len(e2) > len(e1):
+                reverse_chain(solution, ch1)
+                e1, e2 = e2, e1
+            else:
+                reverse_chain(solution, ch2)
         solution.chains[ch1].edges = e1 + e2
     del solution.chains[ch2]
 
 def reverse_chain(solution, ch):
-    reverse_edges(solution.chains[ch])
-
-def reverse_edges(ch):
-    for e in ch.edges:
+    for e in solution.chains[ch].edges:
         e.u, e.v = e.v, e.u
-    ch.edges.reverse()
+    solution.chains[ch].edges.reverse()
 
 # Returns True if the edge is added to the front
 # and false if it is added to the back

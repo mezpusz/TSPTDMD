@@ -1,7 +1,7 @@
 import math
 
 def parse_input(filename):
-    print('Parsing input...')
+    print('Parsing input from {}'.format(filename))
     with open(filename, 'r') as f:
         lines = f.readlines()
         if str.startswith(lines[0], 'EDGELIST'):
