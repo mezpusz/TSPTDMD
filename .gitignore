@@ -72,6 +72,12 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Emacs temp files
+\#*
+
+# Vim temp files
+*.swp
+
 # pyenv
 .python-version
 
