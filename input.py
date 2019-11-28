@@ -32,7 +32,7 @@ def edgelist(lines):
         for v in range(len(u)):
             if u[v] == -1:
                 u[v] = M
-    return vertices, k, L
+    return vertices, k, L, M
 
 def coords(lines):
     n, k, L = map(int, lines[0].split())
