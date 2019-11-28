@@ -28,7 +28,7 @@ logging.debug(edgelist)
 neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
 
 heuristic = sys.argv[3]
-if heuristic == "local_search":
+if heuristic == "local_search" or heuristic == "ls":
     solution = construct_deterministic(edgelist, len(vertices), k, L)
     solution = local_search(solution, best_improvement, neighborhood_factory, 100)
 elif heuristic == "grasp":

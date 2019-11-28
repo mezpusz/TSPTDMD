@@ -2,7 +2,7 @@ import logging
 
 def grasp(random_heuristic, local_search, stop):
     best_sol = local_search(random_heuristic())
-    counter = 0
+    counter = 1
     while counter < stop:
         logging.debug(counter)
         new_sol = local_search(random_heuristic())

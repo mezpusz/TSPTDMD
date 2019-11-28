@@ -6,9 +6,9 @@ from random import randint
 class NeighborhoodFactory():
     def __init__(self, edgelist, name):
         self.edgelist = edgelist
-        if name == 'ExchangeDriver':
+        if name == 'ExchangeDriver' or name == "ed":
             self.index = 0
-        elif name == 'ShortBlockMove':
+        elif name == 'ShortBlockMove' or name == 'sbm':
             self.index = 1
         elif name == 'Reversal':
             self.index = 2
