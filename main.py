@@ -4,12 +4,7 @@ from search import local_search, local_search_partially_applied, best_improvemen
 from neighborhood import NeighborhoodFactory
 from grasp import grasp
 from vnd import vnd
-<<<<<<< Updated upstream
-import logging, sys
-
-=======
 import logging, sys, math, os.path
->>>>>>> Stashed changes
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 from random import seed
