@@ -50,20 +50,7 @@ def construct_deterministic(edgelist, n, k, L):
             l = (l + 1) % k   # Next driver
         #print("i={},j={},obj={}".format(i,j,sol.obj))
 
-    # The solution maintains a set of chains of edges
-    # that should've consolidated into one single chain now.
-    # ch is that chain of edges.
-    ch = sol.chains[0].edges
-
-    # g is the set of edges that will turn the chain into a cycle
-    g = (e for i, e in enumerate(edgelist) if e[0] == ch[0].u and
-        e[1] == ch[-1].v or e[1] == ch[0].u and
-        e[0] == ch[-1].v)
-
-    # We pick the first of those edges.
-    loopback_edge = next(g, None)
-    add_loopback_edge(sol, Edge(loopback_edge[0], loopback_edge[1], l, loopback_edge[2]))
-    print("solution={}".format(sol))
+    add_lookback_edge(edgelist, sol, l)
     return sol
 
 def construct_random(edgelist, n, k, L):
@@ -77,6 +64,7 @@ def construct_random(edgelist, n, k, L):
         insert_edge(sol, Edge(edgelist[i][0], edgelist[i][1], l, edgelist[i][2]))
         i = randint(0, len(edgelist)-1)
         l = randint(0, k-1)
+    add_lookback_edge(edgelist, sol, randint(0, k-1))
     return sol
 
 # Takes the input to construct random and returns a function that
@@ -84,3 +72,18 @@ def construct_random(edgelist, n, k, L):
 # Created so we don't have to supply the arguments to grasp as well
 def construct_random_from_given_inputs(edgelist,n,k,L):
     return lambda: construct_random(edgelist,n,k,L)
+
+def add_lookback_edge(edgelist, solution, driver):
+    # The solution maintains a set of chains of edges
+    # that should've consolidated into one single chain now.
+    # ch is that chain of edges.
+    ch = solution.chains[0].edges
+
+    # g is the set of edges that will turn the chain into a cycle
+    g = (e for i, e in enumerate(edgelist) if e[0] == ch[0].u and
+        e[1] == ch[-1].v or e[1] == ch[0].u and
+        e[0] == ch[-1].v)
+
+    # We pick the first of those edges.
+    loopback_edge = next(g, None)
+    add_loopback_edge(solution, Edge(loopback_edge[0], loopback_edge[1], driver, loopback_edge[2]))
