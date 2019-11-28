@@ -61,7 +61,6 @@ def construct_deterministic(edgelist, n, k, L):
     print("solution={}".format(sol))
     return sol
 
-# NOt working yet
 def construct_random(edgelist, n, k, L):
     sol = Solution(k, L)
     i = randint(0, len(edgelist)-1)

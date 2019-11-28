@@ -1,4 +1,3 @@
-
 import math
 
 def parse_input(filename):
@@ -37,7 +36,6 @@ def edgelist(lines):
                 u[v] = M
     return vertices, k, L
 
-# Not working yet
 def coords(lines):
     n, k, L = map(int, lines[0].split())
     coordinates = []
