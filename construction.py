@@ -60,9 +60,11 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
     # changing two edges at a time, during which one part of the
     # chain is reversed. We do this until we run out of options
     # but with a maximum number of tries to avoid infinite loops
+
+    #TODO: put this and the code in Reversal to a common place
     changed = True
     tries = 0
-    while changed and tries < 1000:
+    while M != -1 and changed and tries < 1000:
         changed = False
         index = -1
         edges = sol.chains[0].edges

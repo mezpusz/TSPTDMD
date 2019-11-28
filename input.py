@@ -43,10 +43,28 @@ def coords(lines):
         coordinates.append((x,y))
     for i in range(n):
         for j in range(i+1, n):
-            dist_x = (coordinates[i][0] - coordinates[j][0])**2
-            dist_y = (coordinates[i][1] - coordinates[j][1])**2
+            dist_x = distance(coordinates[i][0], coordinates[j][0])**2
+            dist_y = distance(coordinates[i][1], coordinates[j][1])**2
             dist = math.sqrt(dist_x+dist_y)
             #TODO: look out for rounding here
-            vertices[i][j] = int(dist)
-            vertices[i][j] = int(dist)
-    return vertices, k, L
+            dist_rounded = proper_round(dist)
+            vertices[i][j] = dist_rounded
+            vertices[j][i] = dist_rounded
+    return vertices, k, L, -1
+
+def proper_round(num):
+    num_last = str(num)[:str(num).index('.')+2][-1]
+    if num_last>='5':
+        return int(num)+1
+    return int(num)
+
+def distance(a, b):
+    if (a == b):
+        return 0
+    elif (a < 0) and (b < 0) or (a > 0) and (b > 0):
+        if (a < b):
+            return (abs(abs(a) - abs(b)))
+        else:
+            return -(abs(abs(a) - abs(b)))
+    else:
+        return math.copysign((abs(a) + abs(b)),b)
