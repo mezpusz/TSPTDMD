@@ -7,6 +7,7 @@ class Solution:
         self.chains = []
         self.num_edges = 0
         self.drivers = [Driver(L) for i in range(k)]
+        self.L = L ** 2
         self.obj = L ** 2
 
     def __str__(self):
@@ -164,3 +165,18 @@ def update_objective(solution, driver_map):
         driver.obj -= change
         driver.obj_squared = driver.obj ** 2
         solution.obj += int(driver.obj_squared/k)
+
+
+def monolithic_objective(solution):
+    obj = solution.L
+    k = len(solution.drivers)
+    for driver in solution.drivers:
+        obj += int(driver.obj_squared/k)
+    return obj
+
+
+def choose_obj(new, prev, delta_eval):
+    if delta_eval:
+        improvement = new < prev
+    else:
+        improvement = monolithic_objective(new) < prev.obj

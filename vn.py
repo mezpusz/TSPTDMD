@@ -3,14 +3,14 @@ import copy
 from neighborhood import n_step
 import logging
 
-def vnd(solution, neighborhood_factory):
+def vnd(solution, neighborhood_factory,delta_eval=True):
     #print('Starting VND...')
     l = 0
     best = solution
     while l < 4:
         logging.debug("  l " + str(l))
         neighborhood_factory.set_index(l)
-        new = local_search(best, best_improvement, neighborhood_factory, 1)
+        new = local_search(best, best_improvement, neighborhood_factory, 1, delta_eval)
         if new < best:
             best = new
             #print('New best solution found: {}'.format(best.obj))
@@ -20,7 +20,7 @@ def vnd(solution, neighborhood_factory):
     return best
 
 
-def gvns(init_sol,neighborhood_fac, vnd_neighborhood_fac, k_max, iter):
+def gvns(init_sol,neighborhood_fac, vnd_neighborhood_fac, k_max, iter,delta_eval=True):
     best_sol = init_sol
     i = 0
     while i < iter:
@@ -29,7 +29,7 @@ def gvns(init_sol,neighborhood_fac, vnd_neighborhood_fac, k_max, iter):
         while k < k_max:
             logging.debug(" k " + str(k))
             random_sol = n_step(best_sol, neighborhood_fac, k)
-            vnd_sol = vnd(random_sol, vnd_neighborhood_fac)
+            vnd_sol = vnd(random_sol, vnd_neighborhood_fac, delta_eval)
             if vnd_sol < best_sol:
                 best_sol = vnd_sol
                 k = 1
