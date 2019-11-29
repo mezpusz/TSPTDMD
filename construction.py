@@ -14,12 +14,10 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
 
     # i is set to index of last edge with weight < A
     for j in range(len(sorted_edgelist)):
-        if sorted_edgelist[j][2] < A:
+        if sorted_edgelist[j][2] >= A:
             i = j
+            break
     print("A={},i={}".format(A,i))
-
-    # j is set to index of first edge with weight >= A
-    j = i + 1
 
     sol = Solution(k, L)
 
@@ -83,7 +81,7 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
                 # i and j are removed so the remaining are added
                 chain1 = Chain(edges, index+1, index2-1)
                 chain2 = Chain(edges, index2+1, index-1)
-                newsol = copy.deepcopy(sol)
+                newsol = sol.copy()
                 newsol.chains = [chain1, chain2]
                 # The number of edges is decreased by 2,
                 # we later add these edges back
