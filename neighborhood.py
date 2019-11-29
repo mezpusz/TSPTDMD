@@ -55,7 +55,7 @@ class Reversal(Neighborhood):
         # i and j are removed so the remaining are added
         chain1 = Chain(orig_edges, self.i+1, self.j-1)
         chain2 = Chain(orig_edges, self.j+1, self.i-1)
-        newsol = copy.deepcopy(self.solution)
+        newsol = self.solution.copy()
         newsol.chains = [chain1, chain2]
         # The number of edges is decreased by 2,
         # we later add these edges back
@@ -71,10 +71,12 @@ class Reversal(Neighborhood):
         # Update values for next iteration:
         # * j should be always at least two positions away from i
         #   otherwise the operation doesn't make sense
+        # * j should not go above 2 when it goes around because
+        #   those are duplicate solutions
         # * all operations are modulo the cycle length
         # * when the neighborhood is traversed, solution becomes
         #   None, so the next iteration won't give anything
-        if (self.j + 2) % self.solution.num_edges == self.i:
+        if (self.j + 2) % self.solution.num_edges == self.i or self.j == 2:
             self.i += 1
             self.i %= self.solution.num_edges
             self.j = (self.i + 2) % self.solution.num_edges
@@ -121,7 +123,7 @@ class ShortBlockMove(Neighborhood):
         chain1 = Chain(orig_edges, self.i+1, self.j-1)
         chain2 = Chain(orig_edges, self.j+1, (self.j+self.l-1) % num_edges)
         chain3 = Chain(orig_edges, (self.j+self.l+1) % num_edges, self.i-1)
-        newsol = copy.deepcopy(self.solution)
+        newsol = self.solution.copy()
         newsol.chains = [chain1, chain2, chain3]
         # The number of edges is decreased by 3,
         # we later add these edges back

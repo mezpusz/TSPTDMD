@@ -19,6 +19,13 @@ class Solution:
     def __lt__(self, other):
         return self.obj < other.obj
 
+    def copy(self):
+        new = Solution(0, 0)
+        new.num_edges = self.num_edges
+        new.drivers = copy.deepcopy(self.drivers)
+        new.obj = self.obj
+        return new
+
 class Chain:
     def __init__(self, edges, i, j):
         if i <= j:
@@ -26,8 +33,7 @@ class Chain:
         else:
             self.edges = copy.deepcopy(edges[i:])
             if j >= 0:
-                 self.edges = self.edges + copy.deepcopy(edges[:j+1])
-            #reverse_edges(self)
+                 self.edges += copy.deepcopy(edges[:j+1])
 
     def __eq__(self, other):
         return self.edges == other.edges

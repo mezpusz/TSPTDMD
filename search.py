@@ -71,6 +71,8 @@ def best_improvement(solution, neighborhood):
         # logging.debug("best iter " + str(i))
         new = neighborhood.next()
         i+=1
+        if i % 1000 == 0:
+            print("Found {} neighbors so far, best is {}".format(i, best.obj))
         if new == None:
             #print("Found {} neighbors".format(i))
             break
