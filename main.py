@@ -57,6 +57,9 @@ elif heuristic == "vnd":
     solution = vnd(solution, vnd_neighborhood_fac)
 
 elif heuristic == "gvns":
+    if sys.argv[2] == "sbm" or sys.argv[2] == "ShortBlockMove" or sys.argv[2] == 'r' or sys.argv[2] == "Reversal":
+        print("That neighborhood is not currently supported")
+        exit()
     # vnd_neighborhood_fac is reset, so the exact type is unimportant
     vnd_neighborhood_fac = NeighborhoodFactory(edgelist)
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
