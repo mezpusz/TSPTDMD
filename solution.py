@@ -29,6 +29,9 @@ class Chain:
                  self.edges = self.edges + copy.deepcopy(edges[:j+1])
             #reverse_edges(self)
 
+    def __eq__(self, other):
+        return self.edges == other.edges
+
     def __str__(self):
         res = ""
         for e in self.edges:
@@ -42,6 +45,9 @@ class Edge:
         self.driver = d
         self.w = w
 
+    def __eq__(self, other):
+        return self.u == other.u and self.v == other.v and self.driver == other.driver and self.w == other.w
+
     def __str__(self):
         return "({},{})d={},w={}".format(self.u, self.v, self.driver, self.w)
 
@@ -49,6 +55,9 @@ class Driver:
     def __init__(self, L):
         self.obj_squared = L ** 2
         self.obj = L
+
+    def __eq__(self, other):
+        return self.obj == other.obj
 
 def insert_edge(solution, edge):
     if solution.num_edges == 0:

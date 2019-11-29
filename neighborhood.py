@@ -19,8 +19,8 @@ class NeighborhoodFactory():
             raise Exception("No such neighborhood: {}".format(name))
 
     def set_index(self, i):
-        self.index = i
-        self.index %= 4
+        self.index = i % 4
+
 
     def get(self, solution):
         if self.index == 0:
@@ -113,6 +113,7 @@ class ShortBlockMove(Neighborhood):
     def next(self):
         if self.solution == None:
             return None
+        # logging.debug(str(self.i) + " " + str(self.j))
         orig_edges = self.solution.chains[0].edges
         num_edges = self.solution.num_edges
         # Break the chain into two by removing two edges
@@ -165,7 +166,7 @@ class ShortBlockMove(Neighborhood):
         while (self.j + self.l + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
-        logging.debug(str(self.i) + " " + str(self.j))
+        # logging.debug(str(self.i) + " " + str(self.j))
         newsol = self.next()
         self.i = old_i
         self.j = old_j
