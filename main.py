@@ -36,12 +36,15 @@ tabu_length      = 10
 heuristic = sys.argv[3]
 
 if heuristic == 'deterministic_construction' or heuristic == 'dc':
+    heuristic = "deterministic_construction"
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
 
-if heuristic == 'random_construction' or heuristic == 'rc':
+elif heuristic == 'random_construction' or heuristic == 'rc':
+    heuristic   = "random_construction"
     solution = construct_random(sorted_edgelist, len(edgelist), k, L)
 
 elif heuristic == "local_search" or heuristic == "ls":
+    heuristic   = "local_search"
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
     solution = local_search(solution, best_improvement, neighborhood_factory, local_iterations)
 
@@ -66,6 +69,7 @@ elif heuristic == "gvns":
     solution = gvns(solution, neighborhood_factory, vnd_neighborhood_fac, len(edgelist), gvns_iterations)
 
 elif heuristic == "tabu_search" or heuristic == "ts":
+    heuristic   = "tabu_search"
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
     solution = tabu_search(solution, neighborhood_factory, tabu_iterations, tabu_length)
 
