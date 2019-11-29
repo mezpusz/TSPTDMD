@@ -1,10 +1,11 @@
 import logging
 
 def local_search(solution, step_fnc, neighborhood_factory, iterations=100):
-    #print('Running local search')
+    print('Running local search')
     best = solution
     i = 0
     while i < iterations:
+        print(i)
         new_sol = step_fnc(best, neighborhood_factory.get(best))
         if new_sol < best:
             best = new_sol
@@ -19,10 +20,12 @@ def local_search_partially_applied (step_fnc, neighborhood_factory, iterations):
     return lambda solution: local_search(solution, step_fnc, neighborhood_factory, iterations)
 
 def tabu_search(solution, neighborhood_factory, iterations=100, tabu_length=10):
+    print("tabu!")
     best = solution
     tabu_list = [best]
     i = 0
     while i < iterations:
+        print(i)
         new_sol = tabu_improvement(best, neighborhood_factory.get(best), tabu_list)
 
         tabu_list.append(new_sol)
@@ -31,8 +34,6 @@ def tabu_search(solution, neighborhood_factory, iterations=100, tabu_length=10):
 
         if new_sol < best:
             best = new_sol
-        else:
-            break
         i += 1
     return best
 
@@ -48,6 +49,7 @@ def tabu_improvement(solution, neighborhood,tabu_list):
             not_in_tabu_list = True
             for tabu_elm in tabu_list:
                 not_in_tabu_list |= tabu_elm.chains == new.chains
+            print(not_in_tabu_list)
             if not_in_tabu_list:
                 best = new
     return best
