@@ -44,7 +44,7 @@ def tabu_improvement(solution, neighborhood,tabu_list):
         i+=1
         if new == None:
             break
-        elif new < best and not_:
+        elif new < best:
             not_in_tabu_list = True
             for tabu_elm in tabu_list:
                 not_in_tabu_list |= tabu_elm.chains == new.chains
