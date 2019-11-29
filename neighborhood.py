@@ -2,9 +2,10 @@ import logging
 from solution import Chain, Edge, insert_edge, add_loopback_edge, update_objective
 import copy
 from random import randint
+from math import ceil
 
 class NeighborhoodFactory():
-    def __init__(self, edgelist, name):
+    def __init__(self, edgelist, name='ExchangeDriver'):
         self.edgelist = edgelist
         if name == 'ExchangeDriver' or name == "ed":
             self.index = 0
@@ -12,7 +13,7 @@ class NeighborhoodFactory():
             self.index = 1
         elif name == 'ShortBlockMove' or name == 'sbm':
             self.index = 2
-        elif name == 'Reversal':
+        elif name == 'Reversal' or name == 'r':
             self.index = 3
         else:
             raise Exception("No such neighborhood: {}".format(name))
@@ -38,6 +39,7 @@ class Neighborhood():
     def random(self):
         raise Exception("Not implemented")
 
+# reverses part of the route
 class Reversal(Neighborhood):
     def __init__(self, solution, edgelist):
         self.solution = solution
@@ -91,11 +93,12 @@ class Reversal(Neighborhood):
         while (self.j + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
-        newsol = next()
+        newsol = self.next()
         self.i = old_i
         self.j = old_j
         return newsol
 
+# Cuts out two parts of the route and exchanges them
 class ShortBlockMove(Neighborhood):
     def __init__(self, solution, edgelist):
         self.solution = solution
@@ -162,7 +165,8 @@ class ShortBlockMove(Neighborhood):
         while (self.j + self.l + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
-        newsol = next()
+        logging.debug(str(self.i) + " " + str(self.j))
+        newsol = self.next()
         self.i = old_i
         self.j = old_j
         return newsol
@@ -206,11 +210,12 @@ class ExchangeDriver(Neighborhood):
         while self.j == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
-        newsol = next()
+        newsol = self.next()
         self.i = old_i
         self.j = old_j
         return newsol
 
+# Reverses the order of drivers in a part of the route
 class DriverReversal(Neighborhood):
     def __init__(self, solution):
         self.solution = solution
@@ -255,7 +260,16 @@ class DriverReversal(Neighborhood):
         while (self.j + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
             self.i = randint(0, num_edges-1)
             self.j = randint(0, num_edges-1)
-        newsol = next()
+        newsol = self.next()
         self.i = old_i
         self.j = old_j
         return newsol
+
+
+# returns a solution n random steps away in the relevant neighborhood
+def n_step(solution, neighborhood_fac, n):
+    count = 1
+    while count <= n:
+        solution = neighborhood_fac.get(solution).random()
+        count += 1
+    return solution

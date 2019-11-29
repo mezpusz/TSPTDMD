@@ -3,7 +3,7 @@ from construction import construct_deterministic, construct_random, construct_ra
 from search import local_search, local_search_partially_applied, best_improvement, first_improvement
 from neighborhood import NeighborhoodFactory
 from grasp import grasp
-from vnd import vnd
+from vn import vnd, gvns
 import logging, sys, math, os.path
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -29,6 +29,7 @@ neighborhood_factory = NeighborhoodFactory(vertices, sys.argv[2])
 
 local_iterations = 100
 grasp_iterations = 100
+gvns_iterations  = 10
 
 heuristic = sys.argv[3]
 if heuristic == "local_search" or heuristic == "ls":
@@ -39,8 +40,15 @@ elif heuristic == "grasp":
     grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, local_iterations)
     solution = grasp(random_constructor, grasp_local_search, grasp_iterations)
 elif heuristic == "vnd":
+    # vnd_neighborhood_fac is reset, so the exact type is unimportant
+    vnd_neighborhood_fac = NeighborhoodFactory(vertices)
     solution = construct_deterministic(edgelist, len(vertices), k, L)
-    solution = vnd(solution, neighborhood_factory)
+    solution = vnd(solution, vnd_neighborhood_fac)
+elif heuristic == "gvns":
+    # vnd_neighborhood_fac is reset, so the exact type is unimportant
+    vnd_neighborhood_fac = NeighborhoodFactory(vertices)
+    solution = construct_deterministic(edgelist, len(vertices), k, L)
+    solution = gvns(solution, neighborhood_factory, vnd_neighborhood_fac, len(vertices), gvns_iterations)
 
 basename = os.path.splitext(os.path.basename(filename))[0]
 res = basename + '\n'
