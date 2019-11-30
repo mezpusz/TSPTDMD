@@ -8,6 +8,20 @@ from vn import vnd, gvns
 import logging, sys, math, os.path
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
+def validate_solution(solution, edgelist, k, L):
+    drivers = [L for i in range(k)]
+    assert(len(solution.chains)==1)
+    assert(len(solution.chains[0].edges)==solution.num_edges)
+    for i,e in enumerate(solution.chains[0].edges):
+        assert(e.w==edgelist[e.u][e.v])
+        assert(e.u==solution.chains[0].edges[i-1].v)
+        drivers[e.driver]-=edgelist[e.u][e.v]
+    obj = 0
+    for d in drivers:
+        obj += d**2
+    obj /= k
+    print("Objective in solution is: {}, calculated: {}".format(math.sqrt(solution.obj), math.sqrt(obj)))
+
 from random import seed
 seed()
 
@@ -85,6 +99,8 @@ res += '\n'
 for e in solution.chains[0].edges:
     res += str(e.driver) + ' '
 res += '\n'
+
+validate_solution(solution, edgelist, k, L)
 
 print(res)
 filename = 'results/'+heuristic+'/'+basename+'_'+heuristic+'_results.txt'
