@@ -177,6 +177,6 @@ def monolithic_objective(solution):
 
 def choose_obj(new, prev, delta_eval):
     if delta_eval:
-        improvement = new < prev
+        return new < prev
     else:
-        improvement = monolithic_objective(new) < prev.obj
+        return monolithic_objective(new) < prev.obj
