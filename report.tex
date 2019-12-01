@@ -17,26 +17,36 @@ We get a relatively bad value if we select the largest weight edges and assign a
 $$\sqrt{\frac{1}{k}(L-\sum_{e\in\phi^{-1}(c_i)}{d_e})^2+\frac{1}{k}\sum_{i=2}^{k}{L^2}}$$
 The question is whether it is the worst case. Under the assumption that $L$ not close to the sum of $n$ maximum value edges selected for the tour, the first component of the square root decreases if we change any edge to a lower weight edge, and if we assign some edge to another driver, the first component decreases more than the second component can possibly increase.\medskip\\
 This means that selecting the first $n$ maximum weight edges and assigning them to a single driver gives an upper bound for the objective and any value greater than this $n$ maximum weight sum is a good value for $M$.
-\section*{Subtask 2}
+\section*{Subtask 2: deterministic construction heuristic}
 One simple deterministic construction heuristic is to pick $\frac{n}{k}$ edges for all $k$ drivers. We calculate the average of the to-be-added edge weights $A$ to get $\frac{n}{k}\cdot A$ close to $L$. We try to pick edges that have weight close to $A$ and which make no cycle with the edges already added. We assign these edges to drivers in a cyclic manner:
 \begin{algorithmic}[1]
 \Function{DeterministicConstruction}{E, n, k, L}
 \State $A \gets L*k/n$
-\State find index $i$ in $E$ with weight closest to $A$
+\State find first index $i$ in $E$ with weight at least $A$
 \State $j \gets i+1, l \gets 0$
 \While{less than $n$ edges are added}
-\If{$i \ge 0$ and $E[i]$ does not form a cycle with previous edges}
+\If{$i \ge 0$ and $j < m$}
+\State $s \gets \min\{E[i],E[j]\}$
+\If{$E[s]$ does not form a cycle with previous edges}
+\State add $E[s]$ to edge set and to $l$th driver
+\State $i \gets i - 1$ or $j \gets j + 1$ based on which one was selected
+\EndIf
+\ElsIf{$i \ge 0$ and $E[i]$ does not form a cycle with previous edges}
 \State add $E[i]$ to edge set and to $l$th driver
-\State $l \gets l + 1 \mod k$
-\EndIf
-\If{$j < m$ and $E[j]$ does not form a cycle with previous edges}
+\State $i \gets i - 1$
+\Else
 \State add $E[j]$ to edge set and to $l$th driver
-\State $l \gets l + 1 \mod k$
+\State $j \gets j + 1$
 \EndIf
-\State $i \gets i - 1, j \gets j + 1$
+\State $l \gets l + 1 \mod k$
 \EndWhile
 \EndFunction
-\end{algorithmic} 
+\end{algorithmic}
+In the end we arrive with a chain of edges but the edge between the first and last vertex is not yet added, so we add this too.\medskip\\
+We also do a post-processing which is used when the input format is \textbf{EDGELIST}. In this case there may be edges that are non-existent, meaning they have weight $M$. We try to replace these by making a reversal move including the selected edge until no change can be made.
+\section*{Subtask 3: random construction heuristic}
+The random construction heuristic uses the same functionality to create a single cycle without vertex repetitions, loops, etc. It however selects randomly from the edge list.\medskip\\
+The construction heuristic that is used by GRASP first constructs a candidate list. It then adds in each iteration an edge selected as described in the slides from the candidate list to the partial solution. We consider all edge-driver combinations. To save time, it then reuses the candidate list: we can be sure that after adding a new edge, no new candidate will be available because of the partial solution representation used, to which we can add any edge even if the endpoints are not in any chain. This means that we need to remove the edges that are no longer valid in the partial solution. These include edges that have an endpoint which is the same as the "inner endpoint" of the previously added edge, i.e. the endpoint that is not at the boundary of a chain. Other such rules are used to exclude candidates.
 \section*{Solution representation}
 The solution is represented by a circular permutation of the edges of the tour with a pointer from each edge to the driver associated with it. Also, we have the values for the tour and the driver stored as described in the next section.\medskip\\
 A tricky part of the solution representation is to maintain a valid partial solution during the construction part. Then when we insert a new edge, one of the following happens:
@@ -63,4 +73,16 @@ When the solution changes, one of the following happens:
 	\item change an edge of a driver to another edge: $F = F - S_i$, then we add the difference $w(e_{new}) - w(e_{old})$ of the edge weights to $D_i$, $S_i = D_i^2$ and $F = F + S_i$
 	\item chain of the above: when we change multiple edges at a driver, we only calculate $F$ and $S_i$ when all are added or when we change multiple driver assignments, we only calculate $F$ at the end
 \end{itemize}
+\section*{Subtask 5: neighborhood structures}
+In this section we describe the implemented neighborhoods in the order in which the VND search uses them. We note that all neighborhoods use only two instances of the solution: one is the original and the other is continuously changed during the search through the neighborhood. This means that the client using the neighborhoods should make a copy of a solution if it needs to be used later. The reuse of the second instance is to lower memory consumption and to eliminate the performance bottlenecks created by instance allocation. This aspect is discussed for each neighborhood.
+\paragraph{ExchangeDriver}
+This neighborhood is rather simple: we take all possible pairs of edges and exchange their drivers. We simply revert this operation when moving to the next neighbor.
+\paragraph{DriverReversal}
+This takes all non-trivial intervals of edges in the cyclic representation and reverse all drivers in this interval. When creating the next neighbor that still reverses edges from the same starting position as the previous, we have one more edge to consider in the end of this new interval. We simply move all drivers one position up in the interval and assign the last (new) edge's driver to that of the first.
+\paragraph{ShortBlockMove}
+This is the same as described in the lecture. The next neighbor generation works as follows. The position to which the block is moved is the same in this case because otherwise we create a new neighbor instance from the original. What changes is the block to be moved, which moves ahead one position, therefore we need to shift the moved edges in the previous position backwards, add the new block edge at the end and put back the first block edge from the previous neighbor to its original place.
+\paragraph{Reversal}
+This is also the same as described in the lecture. One implementation detail is that we rotate one part of the cycle in the representation completely during this process. When moving to the next neighbor, we need to consider one more edge to be rotated. We shift the rotated part completely by one position and add this new rotated edge, then connect the part as necessary.
+\section*{Results}
+
 \end{document}
