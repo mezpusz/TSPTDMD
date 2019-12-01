@@ -53,7 +53,6 @@ class Reversal(Neighborhood):
         orig_edges = self.solution.chains[0].edges
         for i in range(num_edges-2):
             newsol = copy.deepcopy(self.solution)
-            validate_solution(newsol, self.edgelist)
             newedges = newsol.chains[0].edges
             j = i+2
             for e in newedges[i+1:j]:
@@ -137,7 +136,6 @@ class ShortBlockMove(Neighborhood):
         orig_edges = self.solution.chains[0].edges
         for i in range(num_edges-2):
             newsol = copy.deepcopy(self.solution)
-            validate_solution(newsol, self.edgelist)
             newedges = newsol.chains[0].edges
             j = i+2
             # copy block edges to their positions
@@ -301,18 +299,39 @@ class DriverReversal(Neighborhood):
     def next(self):
         if self.solution == None:
             return None
-        for i in range(self.solution.num_edges-2):
-            for j in range(i+2, self.solution.num_edges):
-                newsol = copy.deepcopy(self.solution)
-                k = i
-                l = j
-                while k < l:
-                    e_k = newsol.chains[0].edges[k]
-                    e_l = newsol.chains[0].edges[l]
-                    update_objective(newsol, [(e_k.driver, e_l.w-e_k.w), (e_l.driver, e_k.w-e_l.w)])
-                    e_k.driver, e_l.driver = e_l.driver, e_k.driver
-                    k+=1
-                    l-=1
+        num_edges = self.solution.num_edges
+        for i in range(num_edges-2):
+            j = i+2
+            newsol = copy.deepcopy(self.solution)
+            newedges = newsol.chains[0].edges
+            k = i
+            l = j
+            while k < l:
+                e_k = newedges[k]
+                e_l = newedges[l]
+                update_objective(newsol, [(e_k.driver, e_l.w-e_k.w), (e_l.driver, e_k.w-e_l.w)])
+                e_k.driver, e_l.driver = e_l.driver, e_k.driver
+                k+=1
+                l-=1
+            validate_solution(newsol, self.edgelist)
+            yield newsol
+            while 1:
+                j+=1
+                if j == num_edges:
+                    break
+                k=j
+                driver_changes = [0 for d in newsol.drivers]
+                while k>=i+1:
+                    driver_changes[newedges[k].driver] -= newedges[k].w
+                    driver_changes[newedges[k-1].driver] += newedges[k].w
+                    newedges[k].driver = newedges[k-1].driver
+                    k-=1
+                new_j = self.solution.chains[0].edges[j]
+                driver_changes[newedges[i].driver] -= newedges[i].w
+                driver_changes[new_j.driver] += newedges[i].w
+                newedges[i].driver = new_j.driver
+                driver_map = [(i,v) for i,v in enumerate(driver_changes)]
+                update_objective(newsol, driver_map)
                 validate_solution(newsol, self.edgelist)
                 yield newsol
 
