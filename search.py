@@ -59,6 +59,7 @@ def first_improvement(solution, neighborhood, delta_eval=True):
     for new in neighborhood.next():
         if choose_obj(new,solution,delta_eval):
             return copy.deepcopy(new)
+    return solution
 
 def best_improvement(solution, neighborhood, delta_eval=True):
     best = solution
