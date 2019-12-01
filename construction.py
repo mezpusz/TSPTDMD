@@ -1,6 +1,7 @@
 from solution import Solution, Edge, insert_edge, add_loopback_edge, Chain, update_objective
 from random import randint
 import copy
+from validate import validate_solution
 
 # edgelist should be sorted
 # n = nr. of vertices
@@ -62,7 +63,9 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
     #TODO: put this and the code in Reversal to a common place
     changed = True
     tries = 0
-    while M != -1 and changed and tries < 1000:
+    while M != -1 and changed and tries < 1000000:
+        if tries % 1000 == 0:
+            print("Trying to improve solution, current iteration {}".format(tries))
         changed = False
         index = -1
         edges = sol.chains[0].edges
@@ -99,6 +102,7 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
             else:
                 index2 += 1
                 index2 %= sol.num_edges
+    validate_solution(sol, edgelist)
     return sol
 
 def construct_random(edgelist, n, k, L):

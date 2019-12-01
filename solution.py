@@ -7,7 +7,7 @@ class Solution:
         self.chains = []
         self.num_edges = 0
         self.drivers = [Driver(L) for i in range(k)]
-        self.L = L ** 2
+        self.L = L
         self.obj = L ** 2
 
     def __str__(self):
@@ -21,7 +21,7 @@ class Solution:
         return self.obj < other.obj
 
     def copy(self):
-        new = Solution(0, 0)
+        new = Solution(len(self.drivers), self.L)
         new.num_edges = self.num_edges
         new.drivers = copy.deepcopy(self.drivers)
         new.obj = self.obj
@@ -51,6 +51,15 @@ class Edge:
         self.v = v
         self.driver = d
         self.w = w
+
+    def copy(self, other):
+        self.u = other.u
+        self.v = other.v
+        self.driver = other.driver
+        self.w = other.w
+
+    def update_weight(self, edgelist):
+        self.w = edgelist[self.u][self.v]
 
     def __eq__(self, other):
         return self.u == other.u and self.v == other.v and self.driver == other.driver and self.w == other.w
@@ -166,9 +175,8 @@ def update_objective(solution, driver_map):
         driver.obj_squared = driver.obj ** 2
         solution.obj += int(driver.obj_squared/k)
 
-
 def monolithic_objective(solution):
-    obj = solution.L
+    obj = solution.L**2
     k = len(solution.drivers)
     for driver in solution.drivers:
         obj += int(driver.obj_squared/k)

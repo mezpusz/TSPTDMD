@@ -3,6 +3,7 @@ from solution import Chain, Edge, insert_edge, add_loopback_edge, update_objecti
 import copy
 from random import randint
 from math import ceil
+from validate import validate_solution
 
 class NeighborhoodFactory():
     def __init__(self, edgelist, name='ExchangeDriver'):
@@ -24,9 +25,9 @@ class NeighborhoodFactory():
 
     def get(self, solution):
         if self.index == 0:
-            return ExchangeDriver(solution)
+            return ExchangeDriver(solution, self.edgelist)
         if self.index == 1:
-            return DriverReversal(solution)
+            return DriverReversal(solution, self.edgelist)
         elif self.index == 2:
             return ShortBlockMove(solution, self.edgelist)
         else:
@@ -44,120 +45,131 @@ class Reversal(Neighborhood):
     def __init__(self, solution, edgelist):
         self.solution = solution
         self.edgelist = edgelist
-        self.i = 0
-        self.j = 2
 
     def next(self):
         if self.solution == None:
             return None
-        orig_edges = self.solution.chains[0].edges
-        # Break the chain into two by removing two edges
-        # i and j are removed so the remaining are added
-        chain1 = Chain(orig_edges, self.i+1, self.j-1)
-        chain2 = Chain(orig_edges, self.j+1, self.i-1)
-        newsol = self.solution.copy()
-        newsol.chains = [chain1, chain2]
-        # The number of edges is decreased by 2,
-        # we later add these edges back
-        newsol.num_edges = self.solution.num_edges-2
-        v_i = orig_edges[self.i]
-        v_j = orig_edges[self.j]
-        update_objective(newsol, [(v_i.driver, -v_i.w), (v_j.driver, -v_j.w)])
-        # Add the first cross edge, consisting of
-        # the second vertices of the removed edges
-        insert_edge(newsol, Edge(v_i.v, v_j.v, v_i.driver, self.edgelist[v_i.v][v_j.v]))
-        # Add the second cross edge
-        add_loopback_edge(newsol, Edge(v_i.u, v_j.u, v_j.driver, self.edgelist[v_i.u][v_j.u]))
-        # Update values for next iteration:
-        # * j should be always at least two positions away from i
-        #   otherwise the operation doesn't make sense
-        # * j should not go above 2 when it goes around because
-        #   those are duplicate solutions
-        # * all operations are modulo the cycle length
-        # * when the neighborhood is traversed, solution becomes
-        #   None, so the next iteration won't give anything
-        if (self.j + 2) % self.solution.num_edges == self.i or self.j == 2:
-            self.i += 1
-            self.i %= self.solution.num_edges
-            self.j = (self.i + 2) % self.solution.num_edges
-            if self.i == 0 and self.j == 2:
-                self.solution = None
-        else:
-            self.j = (self.j + 1) % self.solution.num_edges
-        return newsol
-
-    def random(self):
-        old_i = self.i
-        old_j = self.j
         num_edges = self.solution.num_edges
-        self.i = randint(0, num_edges-1)
-        self.j = randint(0, num_edges-1)
-        while (self.j + 1) % num_edges == self.i or (self.j - 1) % num_edges == self.i:
-            self.i = randint(0, num_edges-1)
-            self.j = randint(0, num_edges-1)
-        newsol = self.next()
-        self.i = old_i
-        self.j = old_j
-        return newsol
+        orig_edges = self.solution.chains[0].edges
+        for i in range(num_edges-2):
+            newsol = copy.deepcopy(self.solution)
+            validate_solution(newsol, self.edgelist)
+            newedges = newsol.chains[0].edges
+            j = i+2
+            for e in newedges[i+1:j]:
+                e.u, e.v = e.v, e.u
+            v_i = orig_edges[i]
+            v_j = orig_edges[j]
+            newedges[i].v = v_j.u
+            newedges[j].u = v_i.v
+            newedges[i].update_weight(self.edgelist)
+            newedges[j].update_weight(self.edgelist)
+            update_objective(newsol,
+                [(v_i.driver, newedges[i].w-v_i.w),
+                (v_j.driver, newedges[j].w-v_j.w)]
+            )
+            validate_solution(newsol, self.edgelist)
+            yield newsol
+            while 1:
+                j += 1
+                if j == num_edges:
+                    break
+                k=j-1
+                while k>i+1:
+                    newedges[k].copy(newedges[k-1])
+                    k-=1
+                newedges[i+1].copy(orig_edges[j-1])
+                newedges[i+1].u = orig_edges[j-1].v
+                newedges[i+1].v = orig_edges[j-1].u
+                v_j = orig_edges[j]
+                newsol.obj = self.solution.obj
+                print('neighborhood change: {}'.format(newsol.obj))
+                newsol.drivers = copy.deepcopy(self.solution.drivers)
+                newedges[i].v = v_j.u
+                newedges[j].u = v_i.v
+                newedges[i].update_weight(self.edgelist)
+                newedges[j].update_weight(self.edgelist)
+                update_objective(newsol,
+                    [(v_i.driver, newedges[i].w-v_i.w),
+                    (v_j.driver, newedges[j].w-v_j.w)]
+                )
+                validate_solution(newsol, self.edgelist)
+                yield newsol
 
 # Cuts out two parts of the route and exchanges them
 class ShortBlockMove(Neighborhood):
     def __init__(self, solution, edgelist):
         self.solution = solution
         self.edgelist = edgelist
-        self.i = 0
-        self.j = 2
         self.l = 3
-        # Sanity check to see whether the operation makes sense at all
-        if (self.j + self.l + 1) >= self.solution.num_edges:
-            self.solution = None
 
     def next(self):
         if self.solution == None:
             return None
-        # logging.debug(str(self.i) + " " + str(self.j))
-        orig_edges = self.solution.chains[0].edges
         num_edges = self.solution.num_edges
-        # Break the chain into two by removing two edges
-        # i and j are removed so the remaining are added
-        chain1 = Chain(orig_edges, self.i+1, self.j-1)
-        chain2 = Chain(orig_edges, self.j+1, (self.j+self.l-1) % num_edges)
-        chain3 = Chain(orig_edges, (self.j+self.l+1) % num_edges, self.i-1)
-        newsol = self.solution.copy()
-        newsol.chains = [chain1, chain2, chain3]
-        # The number of edges is decreased by 3,
-        # we later add these edges back
-        newsol.num_edges = num_edges-3
-        v_i = orig_edges[self.i]
-        v_j = orig_edges[self.j]
-        v_k = orig_edges[(self.j+self.l) % num_edges]
-        update_objective(newsol,
-            [(v_i.driver, -v_i.w),
-             (v_j.driver, -v_j.w),
-             (v_k.driver, -v_k.w)])
+        orig_edges = self.solution.chains[0].edges
+        for i in range(num_edges-2):
+            newsol = copy.deepcopy(self.solution)
+            validate_solution(newsol, self.edgelist)
+            newedges = newsol.chains[0].edges
+            j = i+2
+            # copy block edges to their positions
+            for k in range(self.l):
+                newedges[(i+k+1) % num_edges].copy(orig_edges[(j+k+1) % num_edges])
+            # move edges that were before the block after the block
+            for k in range(j-i):
+                newedges[(i+self.l+k+1) % num_edges].copy(orig_edges[(i+k+1) % num_edges])
+            v_i = orig_edges[i]
+            v_j = orig_edges[j]
+            v_k = orig_edges[(j+self.l) % num_edges]
+            # update edge endpoints where the block has been copied
+            newedges[i].v = v_j.v
+            newedges[i].update_weight(self.edgelist)
+            newedges[(i+self.l) % num_edges].v = v_i.v
+            newedges[(i+self.l) % num_edges].update_weight(self.edgelist)
+            # update edge endpoints where the block was
+            newedges[(j+self.l) % num_edges].v = v_k.v
+            newedges[(j+self.l) % num_edges].update_weight(self.edgelist)
+            update_objective(newsol,
+                [(v_i.driver, newedges[i].w-v_i.w),
+                (v_j.driver, newedges[(j+self.l) % num_edges].w-v_j.w),
+                (v_k.driver, newedges[(i+self.l) % num_edges].w-v_k.w)])
+            validate_solution(newsol, self.edgelist)
+            yield newsol
+            while 1:
+                j += 1
+                if j + self.l >= num_edges:
+                    break
+                # move all edges one down in new block position
+                old_u = newedges[i+1%num_edges].u
+                for k in range(i+1, i+self.l):
+                    newedges[k%num_edges].copy(newedges[(k+1)%num_edges])
+                # update edge before block
+                newedges[i].v = newedges[i+1].u
+                newedges[i].update_weight(self.edgelist)
+                # update edges at the end of block
+                newedges[(i+self.l-1)%num_edges].copy(orig_edges[(j+self.l-1)%num_edges])
+                newedges[(i+self.l)%num_edges].copy(orig_edges[(j+self.l)%num_edges])
+                newedges[(i+self.l)%num_edges].v = v_i.v
+                newedges[(i+self.l)%num_edges].update_weight(self.edgelist)
 
-        # Insert block at position i
-        insert_edge(newsol, Edge(v_i.u, v_j.v, v_i.driver, self.edgelist[v_i.u][v_j.v]))
-        insert_edge(newsol, Edge(v_k.u, v_i.v, v_k.driver, self.edgelist[v_k.u][v_i.v]))
-        # Add missing edge where the block was before
-        add_loopback_edge(newsol, Edge(v_j.u, v_k.v, v_j.driver, self.edgelist[v_j.u][v_k.v]))
-        #print('next: i={},j={},sol={}'.format(self.i, self.j, newsol))
-        # Update values for next iteration:
-        # * j starts two positions away from i and it goes
-        #   until the removed edge after the block is the
-        #   same as i otherwise it doesn't make sense
-        # * all operations are modulo the cycle length
-        # * when the neighborhood is traversed, solution becomes
-        #   None, so the next iteration won't give anything
-        if (self.j + self.l + 2) % num_edges == self.i:
-            self.i += 1
-            self.i %= num_edges
-            self.j = (self.i + 2) % num_edges
-            if self.i == 0 and self.j == 2:
-                self.solution = None
-        else:
-            self.j = (self.j + 1) % num_edges
-        return newsol
+                # update edges at where the block was
+                newedges[(j+self.l-1)%num_edges].v = old_u
+                newedges[(j+self.l-1)%num_edges].update_weight(self.edgelist)
+                newedges[(j+self.l)%num_edges].u = old_u
+                newedges[(j+self.l)%num_edges].update_weight(self.edgelist)
+
+                # reset objective
+                newsol.obj = self.solution.obj
+                newsol.drivers = copy.deepcopy(self.solution.drivers)
+                v_j = orig_edges[j]
+                v_k = orig_edges[(j+self.l) % num_edges]
+                update_objective(newsol,
+                    [(v_i.driver, newedges[i].w-v_i.w),
+                    (v_j.driver, newedges[(j+self.l) % num_edges].w-v_j.w),
+                    (v_k.driver, newedges[(i+self.l) % num_edges].w-v_k.w)])
+                validate_solution(newsol, self.edgelist)
+                yield newsol
 
     def random(self):
         old_i = self.i
@@ -177,32 +189,40 @@ class ShortBlockMove(Neighborhood):
 # The neighborhood consist of keeping the same route,
 # but switching pairs of drivers
 class ExchangeDriver(Neighborhood):
-    def __init__(self, solution):
+    def __init__(self, solution, edgelist):
         self.solution = solution
-        self.i = 0
-        self.j = 1
+        self.edgelist = edgelist
 
     def next(self):
         if self.solution == None:
             return None
-        newsol = copy.deepcopy(self.solution)
-        e_i = newsol.chains[0].edges[self.i]
-        e_j = newsol.chains[0].edges[self.j]
-        update_objective(newsol, [(e_i.driver, e_j.w-e_i.w), (e_j.driver, e_i.w-e_j.w)])
-        e_i.driver, e_j.driver = e_j.driver, e_i.driver
-        # Update values for next iteration:
-        # * when the neighborhood is traversed, solution becomes
-        #   None, so the next iteration won't give anything
-        if self.j + 1 == self.solution.num_edges:
-            self.i += 1
-            self.j = self.i + 1
-            # I added + 1 because otherwise self.j would be self.solution.num_edges
-            if self.i + 1 == self.solution.num_edges:
-                self.solution = None
-        else:
-            self.j += 1
-
-        return newsol
+        for i in range(self.solution.num_edges-1):
+            j = i+1
+            newsol = copy.deepcopy(self.solution)
+            newedges = newsol.chains[0].edges
+            e_i = newedges[i]
+            e_j = newedges[j]
+            update_objective(newsol, [(e_i.driver, e_j.w-e_i.w), (e_j.driver, e_i.w-e_j.w)])
+            e_i.driver, e_j.driver = e_j.driver, e_i.driver
+            validate_solution(newsol, self.edgelist)
+            yield newsol
+            while 1:
+                j+=1
+                if j == self.solution.num_edges:
+                    break
+                # change back drivers
+                e_i.driver, e_j.driver = e_j.driver, e_i.driver
+                e_j = newedges[j]
+                # reset objective
+                newsol.obj = self.solution.obj
+                newsol.drivers = copy.deepcopy(self.solution.drivers)
+                update_objective(newsol,
+                    [(e_i.driver, e_j.w-e_i.w),
+                    (e_j.driver, e_i.w-e_j.w)]
+                )
+                e_i.driver, e_j.driver = e_j.driver, e_i.driver
+                validate_solution(newsol, self.edgelist)
+                yield newsol
 
     def random(self):
         old_i = self.i
@@ -220,39 +240,29 @@ class ExchangeDriver(Neighborhood):
 
 # Reverses the order of drivers in a part of the route
 class DriverReversal(Neighborhood):
-    def __init__(self, solution):
+    def __init__(self, solution, edgelist):
         self.solution = solution
+        self.edgelist = edgelist
         self.i = 0
         self.j = 2
 
     def next(self):
         if self.solution == None:
             return None
-        newsol = copy.deepcopy(self.solution)
-        k = self.i
-        l = self.j
-        while k < l:
-            e_k = newsol.chains[0].edges[k]
-            e_l = newsol.chains[0].edges[l]
-            update_objective(newsol, [(e_k.driver, e_l.w-e_k.w), (e_l.driver, e_k.w-e_l.w)])
-            e_k.driver, e_l.driver = e_l.driver, e_k.driver
-            k+=1
-            l-=1
-        # Update values for next iteration:
-        # * j should be always at least two positions away from i
-        #   otherwise the operation doesn't make sense
-        # * all operations are modulo the cycle length
-        # * when the neighborhood is traversed, solution becomes
-        #   None, so the next iteration won't give anything
-        if (self.j + 2) % self.solution.num_edges == self.i:
-            self.i += 1
-            self.i %= self.solution.num_edges
-            self.j = (self.i + 2) % self.solution.num_edges
-            if self.i == 0 and self.j == 2:
-                self.solution = None
-        else:
-            self.j = (self.j + 1) % self.solution.num_edges
-        return newsol
+        for i in range(self.solution.num_edges-2):
+            for j in range(i+2, self.solution.num_edges):
+                newsol = copy.deepcopy(self.solution)
+                k = i
+                l = j
+                while k < l:
+                    e_k = newsol.chains[0].edges[k]
+                    e_l = newsol.chains[0].edges[l]
+                    update_objective(newsol, [(e_k.driver, e_l.w-e_k.w), (e_l.driver, e_k.w-e_l.w)])
+                    e_k.driver, e_l.driver = e_l.driver, e_k.driver
+                    k+=1
+                    l-=1
+                validate_solution(newsol, self.edgelist)
+                yield newsol
 
     def random(self):
         old_i = self.i
@@ -267,7 +277,6 @@ class DriverReversal(Neighborhood):
         self.i = old_i
         self.j = old_j
         return newsol
-
 
 # returns a solution n random steps away in the relevant neighborhood
 def n_step(solution, neighborhood_fac, n):

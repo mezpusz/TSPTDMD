@@ -1,5 +1,6 @@
 from solution import choose_obj
 import logging
+import copy
 
 def local_search(solution, step_fnc, neighborhood_factory, iterations=100, delta_eval=True):
     print('Running local search')
@@ -41,44 +42,33 @@ def tabu_search(solution, neighborhood_factory, iterations=100, tabu_length=10,d
 def tabu_improvement(solution, neighborhood,tabu_list, delta_eval=True):
     best = solution
     i = 0
-    while True:
-        new = neighborhood.next()
+    for new in neighborhood.next():
         i+=1
-        if new == None:
-            break
-        elif choose_obj(new, best, delta_eval):
+        if choose_obj(new, best, delta_eval):
             not_in_tabu_list = True
             for tabu_elm in tabu_list:
                 not_in_tabu_list |= tabu_elm.chains == new.chains
             print(not_in_tabu_list)
             if not_in_tabu_list:
-                best = new
+                best = copy.deepcopy(new)
     return best
 
 # step functions
 
 def first_improvement(solution, neighborhood, delta_eval=True):
-    while True:
-        new = neighborhood.next()
-        if new == None:
-            return solution
-        elif choose_obj(new,solution,delta_eval):
-            return new
+    for new in neighborhood.next():
+        if choose_obj(new,solution,delta_eval):
+            return copy.deepcopy(new)
 
 def best_improvement(solution, neighborhood, delta_eval=True):
     best = solution
     i = 0
-    while True:
-        # logging.debug("best iter " + str(i))
-        new = neighborhood.next()
+    for new in neighborhood.next():
         i+=1
-        if i % 1000 == 0:
+        if i % 10000 == 0:
             print("Found {} neighbors so far, best is {}".format(i, best.obj))
-        if new == None:
-            #print("Found {} neighbors".format(i))
-            break
-        elif choose_obj(new, best, delta_eval):
-            best = new
+        if choose_obj(new, best, delta_eval):
+            best = copy.deepcopy(new)
     return best
 
 def random(solution, neighborhood, delta_eval=True):
