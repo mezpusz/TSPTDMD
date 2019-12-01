@@ -100,10 +100,9 @@ class Reversal(Neighborhood):
         num_edges = self.solution.num_edges
         i = randint(0, num_edges-1)
         j = randint(0, num_edges-1)
-        while j >= num_edges or j <= i + 2:
+        while j <= i + 2:
             i = randint(0, num_edges-1)
             j = randint(0, num_edges-1)
-        num_edges = self.solution.num_edges
         orig_edges = self.solution.chains[0].edges
         newsol = copy.deepcopy(self.solution)
         newedges = newsol.chains[0].edges

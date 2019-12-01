@@ -1,4 +1,4 @@
-from solution import Solution, Edge, insert_edge, add_loopback_edge, Chain, update_objective
+from solution import *
 from random import randint
 import copy
 from validate import validate_solution
@@ -119,11 +119,46 @@ def construct_random(edgelist, n, k, L):
     add_lookback_edge(edgelist, sol, randint(0, k-1))
     return sol
 
+def construct_randomized_greedy(edgelist, sorted_edgelist, n, k, L, alpha):
+    print('Constructing solution randomly with greedy approach')
+    sol = Solution(k, L)
+
+    while sol.num_edges < n-1:
+        candidate_list = []
+        for e in sorted_edgelist:
+            edge = Edge(e[0], e[1], 0, e[2])
+            if can_edge_be_added(sol, edge):
+                for l in range(len(sol.drivers)):
+                    # create edge with actual driver
+                    edge = Edge(e[0], e[1], l, e[2])
+                    obj = calculate_objective_with_edge(sol, edge)
+                    candidate_list.append((obj, edge))
+        sorted(candidate_list, key=lambda x: x[0])
+        min_cand = candidate_list[0]
+        max_cand = candidate_list[-1]
+        max_value = min_cand[0] + alpha * (max_cand[0]-min_cand[0])
+        last_index = next((i for i,c in enumerate(candidate_list) if c[0] > max_value), len(candidate_list)-1)
+        chosen = randint(0, last_index)
+        if not insert_edge(sol, candidate_list[chosen][1]):
+            raise Exception('Could not insert candidate, this should not happen')
+    # choose driver for last edge
+    last_driver = (-1, 0)
+    for l in range(len(sol.drivers)):
+        last_u = sol.chains[0].edges[-1].v
+        last_v = sol.chains[0].edges[0].u
+        edge = Edge(last_u, last_v, l, edgelist[last_u][last_v])
+        obj = calculate_objective_with_edge(sol, edge)
+        if last_driver[0] == -1 or obj < last_driver[0]:
+            last_driver = (obj, l)
+    add_lookback_edge(sorted_edgelist, sol, last_driver[1])
+    # validate_solution(sol, edgelist)
+    return sol
+
 # Takes the input to construct random and returns a function that
 # generates new random solutions without having to resupply the arguments.
 # Created so we don't have to supply the arguments to grasp as well
-def construct_random_from_given_inputs(edgelist,n,k,L):
-    return lambda: construct_random(edgelist,n,k,L)
+def construct_randomized_greedy_from_given_inputs(edgelist,sorted_edgelist,n,k,L,alpha):
+    return lambda: construct_randomized_greedy(edgelist,sorted_edgelist,n,k,L,alpha)
 
 def add_lookback_edge(edgelist, solution, driver):
     # The solution maintains a set of chains of edges

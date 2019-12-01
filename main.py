@@ -1,5 +1,5 @@
 from input import parse_input
-from construction import construct_deterministic, construct_random, construct_random_from_given_inputs
+from construction import construct_deterministic, construct_random, construct_randomized_greedy_from_given_inputs
 from search import local_search, local_search_partially_applied, best_improvement, first_improvement, random, tabu_search
 from neighborhood import NeighborhoodFactory
 from grasp import grasp
@@ -67,7 +67,8 @@ elif heuristic.startswith("local_search") or heuristic == "ls":
     solution = local_search(solution, step_fnc, neighborhood_factory, local_iterations, delta_eval)
 
 elif heuristic == "grasp":
-    random_constructor = construct_random_from_given_inputs(sorted_edgelist, len(edgelist), k, L)
+    alpha = 0.5
+    random_constructor = construct_randomized_greedy_from_given_inputs(edgelist, sorted_edgelist, len(edgelist), k, L, alpha)
     grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, local_iterations, delta_eval)
     solution = grasp(random_constructor, grasp_local_search, grasp_iterations)
 
@@ -101,10 +102,10 @@ res += '\n'
 for e in solution.chains[0].edges:
     res += str(e.driver) + ' '
 res += '\n'
+print(res)
 
 validate_solution(solution, edgelist)
 
-print(res)
 filename = 'results/'+heuristic+'/'+basename+'_'+heuristic+'_results.txt'
 with open(filename, 'a') as f:
     f.write(res)

@@ -166,6 +166,40 @@ def add_loopback_edge(solution, edge):
     solution.num_edges += 1
     update_objective(solution, [(edge.driver, edge.w)])
 
+def can_edge_be_added(solution, edge):
+    ch1 = -1
+    ch2 = -1
+    for i in range(len(solution.chains)):
+        ch = solution.chains[i]
+        for j in range(len(ch.edges)):
+            if ch.edges[j].u == edge.u or ch.edges[j].u == edge.v:
+                if j == 0:
+                    if ch1 == -1:
+                        ch1 = i
+                    else:
+                        ch2 = i
+                # edge endpoint is inside chain, we cannot add it
+                else:
+                    return False
+            if ch.edges[j].v == edge.u or ch.edges[j].v == edge.v:
+                if j == len(ch.edges)-1:
+                    if ch1 == -1:
+                        ch1 = i
+                    else:
+                        ch2 = i
+                # edge endpoint is inside chain, we cannot add it
+                else:
+                    return False
+    if ch1 != -1 and ch2 == ch1:
+        return False
+    else:
+        return True
+
+def calculate_objective_with_edge(solution, edge):
+    k = len(solution.drivers)
+    driver = solution.drivers[edge.driver]
+    return solution.obj - int(driver.obj_squared/k) + ((driver.obj+edge.w)**2)/k
+
 def update_objective(solution, driver_map):
     k = len(solution.drivers)
     for d, change in driver_map:
