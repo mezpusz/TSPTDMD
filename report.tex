@@ -83,6 +83,74 @@ This takes all non-trivial intervals of edges in the cyclic representation and r
 This is the same as described in the lecture. The next neighbor generation works as follows. The position to which the block is moved is the same in this case because otherwise we create a new neighbor instance from the original. What changes is the block to be moved, which moves ahead one position, therefore we need to shift the moved edges in the previous position backwards, add the new block edge at the end and put back the first block edge from the previous neighbor to its original place.
 \paragraph{Reversal}
 This is also the same as described in the lecture. One implementation detail is that we rotate one part of the cycle in the representation completely during this process. When moving to the next neighbor, we need to consider one more edge to be rotated. We shift the rotated part completely by one position and add this new rotated edge, then connect the part as necessary.
+\medskip\\
+The more promising neighborhoods are the Reversal and ShortBlockMove because these can change the value of a solution more especially if there is only one or few drivers. However, with these neighborhoods it takes a very long time to change the drivers of certain edges (they cannot be changed directly, just by changing both endpoints of an edge and therefore making the edge available again to be assigned to some other driver) and so the driver neighborhoods are also needed to reach some elements in the search space.
+\section*{Parameters used}
+\begin{itemize}
+	\item local search iterations: 20
+	\item grasp random iterations: 10
+	\item grasp alpha value: 0.1
+	\item gnvs iterations: 10
+	\item tabu search iterations: 100
+	\item tabu length: 10
+	\item random seed: current time
+\end{itemize}
 \section*{Results}
-
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+Instance/method & Det. const. & Rand. const. & Local search & GRASP & VND \\
+\hline
+0010\_k1 & 800,141.00 & inf & 126.00 & inf & 138.00 \\
+0010\_k2 & 304,154.32 & inf & 304,152.35 & inf & 304,154.32 \\
+0015\_k1 & 3,899,910.00 & inf & 317.00 & inf & 382.00 \\
+0015\_k2 & 2,250,546.11 & inf & 1,334,216.18 & inf & 1,350,999.60 \\
+0020\_k1 & 2,400,452.00 & inf & 331.00 & inf & 352.00 \\
+0020\_k2 & 2,200,680.02 & inf & 1,453,570.52 & inf & 1,301,043.45 \\
+0025\_k1 & inf & inf & 640.00 & inf & 551.00 \\
+0025\_k2 & inf & inf & inf & inf & inf \\
+0030\_k1 & inf & inf & 809.00 & inf & 687.00 \\
+0030\_k2 & inf & inf & 2,504,606.34 & inf & 2,500,664.07 \\
+1000\_k1 & inf & inf & inf & inf & inf \\
+1000\_k2 & inf & inf & inf & inf & inf \\
+1500\_k1 & inf & inf & inf & inf & inf \\
+1500\_k2 & inf & inf & inf & inf & inf \\
+2000\_k1 & inf & inf & inf & inf & inf \\
+2000\_k2 & inf & inf & inf & inf & inf \\
+2500\_k1 & inf & inf & inf & inf & inf \\
+2500\_k2 & inf & inf & inf & inf & inf \\
+3000\_k1 & inf & inf & inf & inf & inf \\
+3000\_k2 & inf & inf & inf & inf & inf \\
+a280\_k1\_1 & 563.00 & 32,117.00 & 164.00 & inf & 111.00 \\
+a280\_k1\_2 & 295.00 & 28,513.00 & 0.00 & inf & 0.00 \\
+a280\_k2\_1 & 282.00 & 15,984.38 & 69.18 & inf & 92.01 \\
+a280\_k2\_2 & 147.50 & 14,145.71 & 0.00 & inf & 1.00 \\
+a280\_k3\_1 & 188.33 & 10,168.70 & 62.11 & inf & 67.67 \\
+a280\_k3\_2 & 10,299.10 & 10,299.10 & 0.58 & inf & 0.82 \\
+a280\_k4\_1 & 141.50 & 7,848.04 & 47.42 & inf & 48.50 \\
+a280\_k4\_2 & 74.25 & 7,178.59 & 0.71 & inf & 0.87 \\
+a280\_k5\_1 & 113.91 & 6,377.83 & 36.76 & inf & 41.80 \\
+a280\_k5\_2 & 59.61 & 5,806.03 & 1.48 & inf & 1.84 \\
+berlin52\_k1\_1 & 4,653.00 & 23,822.00 & 508.00 & inf & 580.00 \\
+berlin52\_k1\_2 & 3,349.00 & 16,671.00 & 0.00 & inf & 0.00 \\
+berlin52\_k2\_1 & 2,326.50 & 11,446.97 & 166.28 & inf & 340.00 \\
+berlin52\_k2\_2 & 1,674.50 & 7,621.71 & 1.00 & inf & 1.00 \\
+berlin52\_k3\_1 & 1,551.00 & 7,030.89 & 165.84 & inf & 279.33 \\
+berlin52\_k3\_2 & 1,116.33 & 5,806.71 & 0.82 & inf & 0.82 \\
+berlin52\_k4\_1 & 1,163.75 & 6,267.06 & 166.29 & inf & 108.25 \\
+berlin52\_k4\_2 & 837.71 & 3,754.42 & 2.12 & inf & 1.00 \\
+berlin52\_k5\_1 & 938.14 & 4,868.65 & 123.68 & inf & 118.60 \\
+berlin52\_k5\_2 & 674.95 & 3,200.80 & 2.37 & inf & 1.34 \\
+rl5915\_k1\_1 & inf & inf & inf & inf & inf \\
+rl5915\_k1\_2 & inf & inf & inf & inf & inf \\
+rl5915\_k2\_1 & inf & inf & inf & inf & inf \\
+rl5915\_k2\_2 & inf & inf & inf & inf & inf \\
+rl5915\_k3\_1 & inf & inf & inf & inf & inf \\
+rl5915\_k3\_2 & inf & inf & inf & inf & inf \\
+rl5915\_k4\_1 & inf & inf & inf & inf & inf \\
+rl5915\_k4\_2 & inf & inf & inf & inf & inf \\
+rl5915\_k5\_1 & inf & inf & inf & inf & inf \\
+rl5915\_k5\_2 & inf & inf & inf & inf & inf \\
+\hline
+\end{tabular}
+\end{center}
 \end{document}
