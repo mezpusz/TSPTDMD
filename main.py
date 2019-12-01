@@ -29,8 +29,8 @@ sorted_edgelist = sorted(sorted_edgelist, key=lambda x: x[2])
 
 neighborhood_factory = NeighborhoodFactory(edgelist, sys.argv[2])
 
-local_iterations = 100
-grasp_iterations = 100
+local_iterations = 20
+grasp_iterations = 10
 gvns_iterations  = 10
 tabu_iterations  = 100
 tabu_length      = 10
@@ -67,7 +67,7 @@ elif heuristic.startswith("local_search") or heuristic == "ls":
     solution = local_search(solution, step_fnc, neighborhood_factory, local_iterations, delta_eval)
 
 elif heuristic == "grasp":
-    alpha = 0.5
+    alpha = 0.1
     random_constructor = construct_randomized_greedy_from_given_inputs(edgelist, sorted_edgelist, len(edgelist), k, L, alpha)
     grasp_local_search = local_search_partially_applied(best_improvement, neighborhood_factory, local_iterations, delta_eval)
     solution = grasp(random_constructor, grasp_local_search, grasp_iterations)

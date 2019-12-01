@@ -123,24 +123,54 @@ def construct_randomized_greedy(edgelist, sorted_edgelist, n, k, L, alpha):
     print('Constructing solution randomly with greedy approach')
     sol = Solution(k, L)
 
+    # create candidate list
+    candidate_list = []
+    for e in sorted_edgelist:
+        edge = Edge(e[0], e[1], 0, e[2])
+        if can_edge_be_added(sol, edge):
+            for l in range(len(sol.drivers)):
+                # create edge with actual driver
+                edge = Edge(e[0], e[1], l, e[2])
+                obj = calculate_objective_with_edge(sol, edge)
+                candidate_list.append((obj, edge))
+    candidate_list = sorted(candidate_list, key=lambda x: x[0])
+
     while sol.num_edges < n-1:
-        candidate_list = []
-        for e in sorted_edgelist:
-            edge = Edge(e[0], e[1], 0, e[2])
-            if can_edge_be_added(sol, edge):
-                for l in range(len(sol.drivers)):
-                    # create edge with actual driver
-                    edge = Edge(e[0], e[1], l, e[2])
-                    obj = calculate_objective_with_edge(sol, edge)
-                    candidate_list.append((obj, edge))
-        sorted(candidate_list, key=lambda x: x[0])
+        # insert first candidate
         min_cand = candidate_list[0]
         max_cand = candidate_list[-1]
         max_value = min_cand[0] + alpha * (max_cand[0]-min_cand[0])
         last_index = next((i for i,c in enumerate(candidate_list) if c[0] > max_value), len(candidate_list)-1)
         chosen = randint(0, last_index)
-        if not insert_edge(sol, candidate_list[chosen][1]):
-            raise Exception('Could not insert candidate, this should not happen')
+        chosen_e = candidate_list[chosen][1]
+        if not insert_edge(sol, chosen_e):
+            found = False
+            for i in range(len(sol.chains)):
+                if (sol.chains[i].edges[0].u == chosen_e.u and sol.chains[i].edges[-1].v == chosen_e.v
+                    or sol.chains[i].edges[0].u == chosen_e.v and sol.chains[i].edges[-1].v == chosen_e.u):
+                    found = True
+                    break
+            if not found:
+                raise Exception('Could not insert candidate, this should not happen')
+            else:
+                del candidate_list[chosen]
+                continue
+        v = find_inner_vertex(sol, chosen_e)
+        del candidate_list[chosen]
+
+        # remove non-feasible edges
+        if v == -2:
+            candidate_list = list(filter((lambda c: c[1].u != chosen_e.u and c[1].v != chosen_e.u), candidate_list))
+            candidate_list = list(filter((lambda c: c[1].u != chosen_e.v and c[1].v != chosen_e.v), candidate_list))
+        elif v != -1:
+            candidate_list = list(filter((lambda c: c[1].u != v and c[1].v != v), candidate_list))
+        # recalculate edge objectives for edges
+        # that are still feasible
+        for c in candidate_list:
+            obj = calculate_objective_with_edge(sol, edge)
+            c = (obj, c[1])
+        candidate_list = sorted(candidate_list, key=lambda x: x[0])
+
     # choose driver for last edge
     last_driver = (-1, 0)
     for l in range(len(sol.drivers)):
@@ -174,3 +204,19 @@ def add_lookback_edge(edgelist, solution, driver):
     # We pick the first of those edges.
     loopback_edge = next(g, None)
     add_loopback_edge(solution, Edge(loopback_edge[0], loopback_edge[1], driver, loopback_edge[2]))
+
+def find_inner_vertex(solution, edge):
+    for i in range(len(solution.chains)):
+        ch = solution.chains[i]
+        if len(ch.edges) == 1 and (edge.u == ch.edges[0].u and edge.v == ch.edges[0].v or
+            edge.u == ch.edges[0].v and edge.v == ch.edges[0].u):
+                return -1
+        elif edge.u == ch.edges[0].u:
+            return edge.v
+        elif edge.v == ch.edges[0].u:
+            return edge.u
+        elif edge.u == ch.edges[-1].v:
+            return edge.v
+        elif edge.v == ch.edges[-1].v:
+            return edge.u
+    return -2
