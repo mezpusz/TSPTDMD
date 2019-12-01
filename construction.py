@@ -102,7 +102,7 @@ def construct_deterministic(edgelist, sorted_edgelist, n, k, L, M):
             else:
                 index2 += 1
                 index2 %= sol.num_edges
-    validate_solution(sol, edgelist)
+    # validate_solution(sol, edgelist)
     return sol
 
 def construct_random(edgelist, n, k, L):

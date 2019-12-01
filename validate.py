@@ -2,7 +2,7 @@ import math
 
 def validate_solution(solution, edgelist):
     # remove this to have validation 
-    return
+    # return
     k = len(solution.drivers)
     L = solution.L
     assert(k > 0)
@@ -26,4 +26,6 @@ def validate_solution(solution, edgelist):
     calculated = int(obj)
     from_solution = solution.obj
     print("Objective in solution is: {}, calculated: {}".format(from_solution, calculated))
+    if calculated == 0 and from_solution == 0 or calculated < 10 and from_solution < 10:
+        return
     assert(0.1 > abs(calculated-from_solution)/max(calculated, from_solution))

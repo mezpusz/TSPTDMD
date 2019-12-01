@@ -67,7 +67,7 @@ class Reversal(Neighborhood):
                 [(v_i.driver, newedges[i].w-v_i.w),
                 (v_j.driver, newedges[j].w-v_j.w)]
             )
-            validate_solution(newsol, self.edgelist)
+            # validate_solution(newsol, self.edgelist)
             yield newsol
             while 1:
                 j += 1
@@ -91,7 +91,7 @@ class Reversal(Neighborhood):
                     [(v_i.driver, newedges[i].w-v_i.w),
                     (v_j.driver, newedges[j].w-v_j.w)]
                 )
-                validate_solution(newsol, self.edgelist)
+                # validate_solution(newsol, self.edgelist)
                 yield newsol
 
     def random(self):
@@ -119,7 +119,7 @@ class Reversal(Neighborhood):
             [(v_i.driver, newedges[i].w-v_i.w),
             (v_j.driver, newedges[j].w-v_j.w)]
         )
-        validate_solution(newsol, self.edgelist)
+        # validate_solution(newsol, self.edgelist)
         return newsol
 
 # Cuts out two parts of the route and exchanges them
@@ -159,7 +159,7 @@ class ShortBlockMove(Neighborhood):
                 [(v_i.driver, newedges[i].w-v_i.w),
                 (v_j.driver, newedges[(j+self.l) % num_edges].w-v_j.w),
                 (v_k.driver, newedges[(i+self.l) % num_edges].w-v_k.w)])
-            validate_solution(newsol, self.edgelist)
+            # validate_solution(newsol, self.edgelist)
             yield newsol
             while 1:
                 j += 1
@@ -195,7 +195,7 @@ class ShortBlockMove(Neighborhood):
                     [(v_i.driver, newedges[i].w-v_i.w),
                     (v_j.driver, newedges[(j+self.l) % num_edges].w-v_j.w),
                     (v_k.driver, newedges[(i+self.l) % num_edges].w-v_k.w)])
-                validate_solution(newsol, self.edgelist)
+                # validate_solution(newsol, self.edgelist)
                 yield newsol
 
     def random(self):
@@ -232,7 +232,7 @@ class ShortBlockMove(Neighborhood):
             [(v_i.driver, newedges[i].w-v_i.w),
             (v_j.driver, newedges[(j+self.l) % num_edges].w-v_j.w),
             (v_k.driver, newedges[(i+self.l) % num_edges].w-v_k.w)])
-        validate_solution(newsol, self.edgelist)
+        # validate_solution(newsol, self.edgelist)
         return newsol
 
 # The neighborhood consist of keeping the same route,
@@ -253,7 +253,7 @@ class ExchangeDriver(Neighborhood):
             e_j = newedges[j]
             update_objective(newsol, [(e_i.driver, e_j.w-e_i.w), (e_j.driver, e_i.w-e_j.w)])
             e_i.driver, e_j.driver = e_j.driver, e_i.driver
-            validate_solution(newsol, self.edgelist)
+            # validate_solution(newsol, self.edgelist)
             yield newsol
             while 1:
                 j+=1
@@ -270,7 +270,7 @@ class ExchangeDriver(Neighborhood):
                     (e_j.driver, e_i.w-e_j.w)]
                 )
                 e_i.driver, e_j.driver = e_j.driver, e_i.driver
-                validate_solution(newsol, self.edgelist)
+                # validate_solution(newsol, self.edgelist)
                 yield newsol
 
     def random(self):
@@ -285,7 +285,7 @@ class ExchangeDriver(Neighborhood):
         e_j = newedges[j]
         update_objective(newsol, [(e_i.driver, e_j.w-e_i.w), (e_j.driver, e_i.w-e_j.w)])
         e_i.driver, e_j.driver = e_j.driver, e_i.driver
-        validate_solution(newsol, self.edgelist)
+        # validate_solution(newsol, self.edgelist)
         return newsol
 
 # Reverses the order of drivers in a part of the route
@@ -313,7 +313,7 @@ class DriverReversal(Neighborhood):
                 e_k.driver, e_l.driver = e_l.driver, e_k.driver
                 k+=1
                 l-=1
-            validate_solution(newsol, self.edgelist)
+            # validate_solution(newsol, self.edgelist)
             yield newsol
             while 1:
                 j+=1
@@ -332,7 +332,7 @@ class DriverReversal(Neighborhood):
                 newedges[i].driver = new_j.driver
                 driver_map = [(i,v) for i,v in enumerate(driver_changes)]
                 update_objective(newsol, driver_map)
-                validate_solution(newsol, self.edgelist)
+                # validate_solution(newsol, self.edgelist)
                 yield newsol
 
     def random(self):
@@ -354,7 +354,7 @@ class DriverReversal(Neighborhood):
             e_k.driver, e_l.driver = e_l.driver, e_k.driver
             k+=1
             l-=1
-        validate_solution(newsol, self.edgelist)
+        # validate_solution(newsol, self.edgelist)
         return newsol
 
 # returns a solution n random steps away in the relevant neighborhood

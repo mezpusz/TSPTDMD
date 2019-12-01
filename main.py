@@ -46,10 +46,25 @@ elif heuristic == 'random_construction' or heuristic == 'rc':
     heuristic   = "random_construction"
     solution = construct_random(sorted_edgelist, len(edgelist), k, L)
 
-elif heuristic == "local_search" or heuristic == "ls":
-    heuristic   = "local_search"
+elif heuristic.startswith("local_search") or heuristic == "ls":
+    # heuristic   = "local_search"
+    if len(sys.argv) < 5:
+        logging.error('Local search needs a step function: main.py [filename] [neighborhood] [heuristic] [stepfunction]')
+        exit(-1)
+    step_fnc_str = sys.argv[4]
+
+    step_fnc = None
+    if step_fnc_str == 'best_improvement':
+        step_fnc = best_improvement
+    elif step_fnc_str == 'first_improvement':
+        step_fnc = first_improvement
+    elif step_fnc_str == 'random':
+        step_fnc = random
+    if step_fnc == None:
+        logging.error('Local search step function should be: best_improvement, first_improvement or random')
+        exit(-1)
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
-    solution = local_search(solution, best_improvement, neighborhood_factory, local_iterations, delta_eval)
+    solution = local_search(solution, step_fnc, neighborhood_factory, local_iterations, delta_eval)
 
 elif heuristic == "grasp":
     random_constructor = construct_random_from_given_inputs(sorted_edgelist, len(edgelist), k, L)
