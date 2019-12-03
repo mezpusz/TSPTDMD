@@ -91,7 +91,7 @@ The more promising neighborhoods are the Reversal and ShortBlockMove because the
 	\item grasp random iterations: 10
 	\item grasp alpha value: 0.1
 	\item gnvs iterations: 10
-	\item tabu search iterations: 100
+	\item tabu search iterations: 20
 	\item tabu length: 10
 	\item random seed: current time
 \end{itemize}
@@ -99,61 +99,62 @@ The more promising neighborhoods are the Reversal and ShortBlockMove because the
 The experimental setup that created the results used one of our home computers. Due to time limitations we could not run the bigger instances involving 1000+ vertices.
 \section*{Results}
 Note that we show here only the results that are present in TUWEL as the best value for each algorithm. All results including the different combinations for local search can be found in the source code attached.
+\small
 \begin{center}
-\begin{tabular}{|l|c|c|c|c|c|}
+\begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
-Instance/method & Det. const. & Rand. const. & Local search & GRASP & VND \\
+Instance & Det. const. & Rand. const. & Local search & GRASP & VND & Tabu Search \\
 \hline
-0010\_k1 & 800,141.00 & inf & 126.00 & 160.00 & 138.00 \\
-0010\_k2 & 304,154.32 & inf & 304,152.35 & 269,270.78 & 304,154.32 \\
-0015\_k1 & 3,899,910.00 & inf & 317.00 & 382.00 & 382.00 \\
-0015\_k2 & 2,250,546.11 & inf & 1,334,216.18 & 1,251,065.75 & 1,350,999.60 \\
-0020\_k1 & 2,400,452.00 & inf & 331.00 & 417.00 & 352.00 \\
-0020\_k2 & 2,200,680.02 & inf & 1,453,570.52 & 1,662,165.73 & 1,301,043.45 \\
-0025\_k1 & inf & inf & 640.00 & 530.00 & 551.00 \\
-0025\_k2 & inf & inf & inf & 1,699,997.50 & inf \\
-0030\_k1 & inf & inf & 809.00 & 740.00 & 687.00 \\
-0030\_k2 & inf & inf & 2,504,606.34 & 2,170,921.38 & 2,500,664.07 \\
-1000\_k1 & inf & inf & inf & inf & inf \\
-1000\_k2 & inf & inf & inf & inf & inf \\
-1500\_k1 & inf & inf & inf & inf & inf \\
-1500\_k2 & inf & inf & inf & inf & inf \\
-2000\_k1 & inf & inf & inf & inf & inf \\
-2000\_k2 & inf & inf & inf & inf & inf \\
-2500\_k1 & inf & inf & inf & inf & inf \\
-2500\_k2 & inf & inf & inf & inf & inf \\
-3000\_k1 & inf & inf & inf & inf & inf \\
-3000\_k2 & inf & inf & inf & inf & inf \\
-a280\_k1\_1 & 563.00 & 32,117.00 & 164.00 & 2,783.00 & 111.00 \\
-a280\_k1\_2 & 295.00 & 28,513.00 & 0.00 & 251.00 & 0.00 \\
-a280\_k2\_1 & 282.00 & 15,984.38 & 69.18 & 1,578.36 & 92.01 \\
-a280\_k2\_2 & 147.50 & 14,145.71 & 0.00 & 171.41 & 1.00 \\
-a280\_k3\_1 & 188.33 & 10,168.70 & 62.11 & 1,127.12 & 67.67 \\
-a280\_k3\_2 & 10,299.10 & 10,299.10 & 0.58 & 88.20 & 0.82 \\
-a280\_k4\_1 & 141.50 & 7,848.04 & 47.42 & 880.09 & 48.50 \\
-a280\_k4\_2 & 74.25 & 7,178.59 & 0.71 & 99.08 & 0.87 \\
-a280\_k5\_1 & 113.91 & 6,377.83 & 36.76 & 736.03 & 41.80 \\
-a280\_k5\_2 & 59.61 & 5,806.03 & 1.48 & 139.49 & 1.84 \\
-berlin52\_k1\_1 & 4,653.00 & 23,822.00 & 508.00 & 422.00 & 580.00 \\
-berlin52\_k1\_2 & 3,349.00 & 16,671.00 & 0.00 & 0.00 & 0.00 \\
-berlin52\_k2\_1 & 2,326.50 & 11,446.97 & 166.28 & 389.70 & 340.00 \\
-berlin52\_k2\_2 & 1,674.50 & 7,621.71 & 1.00 & 1.00 & 1.00 \\
-berlin52\_k3\_1 & 1,551.00 & 7,030.89 & 165.84 & 294.76 & 279.33 \\
-berlin52\_k3\_2 & 1,116.33 & 5,806.71 & 0.82 & 0.58 & 0.82 \\
-berlin52\_k4\_1 & 1,163.75 & 6,267.06 & 166.29 & 192.28 & 108.25 \\
-berlin52\_k4\_2 & 837.71 & 3,754.42 & 2.12 & 1.22 & 1.00 \\
-berlin52\_k5\_1 & 938.14 & 4,868.65 & 123.68 & 245.92 & 118.60 \\
-berlin52\_k5\_2 & 674.95 & 3,200.80 & 2.37 & 1.48 & 1.34 \\
-rl5915\_k1\_1 & inf & inf & inf & inf & inf \\
-rl5915\_k1\_2 & inf & inf & inf & inf & inf \\
-rl5915\_k2\_1 & inf & inf & inf & inf & inf \\
-rl5915\_k2\_2 & inf & inf & inf & inf & inf \\
-rl5915\_k3\_1 & inf & inf & inf & inf & inf \\
-rl5915\_k3\_2 & inf & inf & inf & inf & inf \\
-rl5915\_k4\_1 & inf & inf & inf & inf & inf \\
-rl5915\_k4\_2 & inf & inf & inf & inf & inf \\
-rl5915\_k5\_1 & inf & inf & inf & inf & inf \\
-rl5915\_k5\_2 & inf & inf & inf & inf & inf \\
+0010\_k1 & 800,141.00 & inf & 126.00 & 160.00 & 138.00 & 138.00 \\
+0010\_k2 & 304,154.32 & inf & 304,152.35 & 269,270.78 & 304,154.32 & 304,160.07 \\
+0015\_k1 & 3,899,910.00 & inf & 317.00 & 382.00 & 382.00 & 393.00 \\
+0015\_k2 & 2,250,546.11 & inf & 1,334,216.18 & 1,251,065.75 & 1,350,999.60 & 2,001,249.31 \\
+0020\_k1 & 2,400,452.00 & inf & 331.00 & 417.00 & 352.00 & 300,383.00 \\
+0020\_k2 & 2,200,680.02 & inf & 1,453,570.52 & 1,662,165.73 & 1,301,043.45 & 2,200,684.59 \\
+0025\_k1 & inf & inf & 640.00 & 530.00 & 551.00 & inf \\
+0025\_k2 & inf & inf & inf & 1,699,997.50 & inf & inf \\
+0030\_k1 & inf & inf & 809.00 & 740.00 & 687.00 & 199,466.00 \\
+0030\_k2 & inf & inf & 2,504,606.34 & 2,170,921.38 & 2,500,664.07 & 2,604,383.91 \\
+1000\_k1 & inf & inf & inf & inf & inf & inf \\
+1000\_k2 & inf & inf & inf & inf & inf & inf \\
+1500\_k1 & inf & inf & inf & inf & inf & inf \\
+1500\_k2 & inf & inf & inf & inf & inf & inf \\
+2000\_k1 & inf & inf & inf & inf & inf & inf \\
+2000\_k2 & inf & inf & inf & inf & inf & inf \\
+2500\_k1 & inf & inf & inf & inf & inf & inf \\
+2500\_k2 & inf & inf & inf & inf & inf & inf \\
+3000\_k1 & inf & inf & inf & inf & inf & inf \\
+3000\_k2 & inf & inf & inf & inf & inf & inf \\
+a280\_k1\_1 & 563.00 & 32,117.00 & 164.00 & 2,783.00 & 111.00 & 476.00 \\
+a280\_k1\_2 & 295.00 & 28,513.00 & 0.00 & 251.00 & 0.00 & 0.00 \\
+a280\_k2\_1 & 282.00 & 15,984.38 & 69.18 & 1,578.36 & 92.01 & 246.73 \\
+a280\_k2\_2 & 147.50 & 14,145.71 & 0.00 & 171.41 & 1.00 & 0.00 \\
+a280\_k3\_1 & 188.33 & 10,168.70 & 62.11 & 1,127.12 & 67.67 & 172.78 \\
+a280\_k3\_2 & 10,299.10 & 10,299.10 & 0.58 & 88.20 & 0.82 & 1.00 \\
+a280\_k4\_1 & 141.50 & 7,848.04 & 47.42 & 880.09 & 48.50 & 135.53 \\
+a280\_k4\_2 & 74.25 & 7,178.59 & 0.71 & 99.08 & 0.87 & 1.22 \\
+a280\_k5\_1 & 113.91 & 6,377.83 & 36.76 & 736.03 & 41.80 & 122.20 \\
+a280\_k5\_2 & 59.61 & 5,806.03 & 1.48 & 139.49 & 1.84 & 1.73 \\
+berlin52\_k1\_1 & 4,653.00 & 23,822.00 & 508.00 & 422.00 & 580.00 & 3,297.00 \\
+berlin52\_k1\_2 & 3,349.00 & 16,671.00 & 0.00 & 0.00 & 0.00 & 1.00 \\
+berlin52\_k2\_1 & 2,326.50 & 11,446.97 & 166.28 & 389.70 & 340.00 & 1,781.36 \\
+berlin52\_k2\_2 & 1,674.50 & 7,621.71 & 1.00 & 1.00 & 1.00 & 11.66 \\
+berlin52\_k3\_1 & 1,551.00 & 7,030.89 & 165.84 & 294.76 & 279.33 & 1,271.23 \\
+berlin52\_k3\_2 & 1,116.33 & 5,806.71 & 0.82 & 0.58 & 0.82 & 17.56 \\
+berlin52\_k4\_1 & 1,163.75 & 6,267.06 & 166.29 & 192.28 & 108.25 & 924.15 \\
+berlin52\_k4\_2 & 837.71 & 3,754.42 & 2.12 & 1.22 & 1.00 & 24.79 \\
+berlin52\_k5\_1 & 938.14 & 4,868.65 & 123.68 & 245.92 & 118.60 & 767.01 \\
+berlin52\_k5\_2 & 674.95 & 3,200.80 & 2.37 & 1.48 & 1.34 & 134.90 \\
+rl5915\_k1\_1 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k1\_2 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k2\_1 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k2\_2 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k3\_1 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k3\_2 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k4\_1 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k4\_2 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k5\_1 & inf & inf & inf & inf & inf & inf \\
+rl5915\_k5\_2 & inf & inf & inf & inf & inf & inf \\
 \hline
 \end{tabular}
 \end{center}
