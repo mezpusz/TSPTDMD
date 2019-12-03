@@ -32,7 +32,7 @@ neighborhood_factory = NeighborhoodFactory(edgelist, sys.argv[2])
 local_iterations = 20
 grasp_iterations = 10
 gvns_iterations  = 10
-tabu_iterations  = 100
+tabu_iterations  = 20
 tabu_length      = 10
 delta_eval       = True
 
