@@ -5,6 +5,8 @@ from neighborhood import NeighborhoodFactory
 from grasp import grasp
 from os.path import exists
 from vn import vnd, gvns
+from genetic import genetic_algorithm
+from hybrid import genetic_with_local_search
 from validate import validate_solution
 import logging, sys, math, os.path
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -93,6 +95,12 @@ elif heuristic == "tabu_search" or heuristic == "ts":
     solution = construct_deterministic(edgelist, sorted_edgelist, len(edgelist), k, L, M)
     solution = tabu_search(solution, neighborhood_factory, tabu_iterations, tabu_length, delta_eval)
 
+elif heuristic == 'genetic' or heuristic == 'ga':
+    heuristic = 'genetic'
+    alpha = 1.0
+    random_constructor = construct_randomized_greedy_from_given_inputs(edgelist, sorted_edgelist, len(edgelist), k, L, alpha)
+    # solution = genetic_algorithm(edgelist, random_constructor, 5, 1.2, 10)
+    solution = genetic_with_local_search(random_constructor, edgelist)
 
 basename = os.path.splitext(os.path.basename(filename))[0]
 res = basename + '\n'
