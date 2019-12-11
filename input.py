@@ -1,4 +1,5 @@
 import math
+import scipy.spatial
 
 def parse_input(filename):
     print('Parsing input from {}'.format(filename))
@@ -41,6 +42,10 @@ def coords(lines):
     for i in range(n):
         x, y = map(int, lines[i+1].split())
         coordinates.append((x,y))
+    newdist = scipy.spatial.distance.cdist(coordinates, coordinates, 'euclidean')
+    newdist += 0.5
+    newdist = newdist.astype(int)
+    # print(newdist)
     for i in range(n):
         for j in range(i+1, n):
             dist_x = distance(coordinates[i][0], coordinates[j][0])**2
@@ -48,9 +53,11 @@ def coords(lines):
             dist = math.sqrt(dist_x+dist_y)
             #TODO: look out for rounding here
             dist_rounded = proper_round(dist)
+            assert(dist_rounded==newdist[i][j])
+            assert(dist_rounded==newdist[j][i])
             vertices[i][j] = dist_rounded
             vertices[j][i] = dist_rounded
-    return vertices, k, L, -1
+    return newdist, k, L, -1
 
 def proper_round(num):
     num_last = str(num)[:str(num).index('.')+2][-1]
