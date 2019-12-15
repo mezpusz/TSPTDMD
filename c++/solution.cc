@@ -95,7 +95,7 @@ Driver::Driver(__int128_t L)
 {}
 
 bool Solution::insert_edge(Edge edge) {
-    debug() << "inserting edge " << edge.u << "," << edge.v << std::endl;
+    // debug() << "inserting edge " << edge.u << "," << edge.v << std::endl;
     if (num_edges == 0) {
         chains.push_back(Chain(n, edge));
     } else {
@@ -159,8 +159,8 @@ bool Solution::find_chains(Edge edge, std::pair<__int128_t, __int128_t>& ch_pair
     }
     ch_pair.first = ch1;
     ch_pair.second = ch2;
-    debug() << "Find chains: edge " << edge << ", solution "
-            << *this << ", result " << ch1 << "," << ch2 << std::endl;
+    // debug() << "Find chains: edge " << edge << ", solution "
+    //         << *this << ", result " << ch1 << "," << ch2 << std::endl;
     return true;
 }
 
@@ -195,8 +195,8 @@ void Solution::merge_chains(__int128_t ch1, __int128_t ch2, Edge edge) {
         chains[ch1].edges = *e1;
     }
     chains.erase(chains.begin() + ch2);
-    debug() << "Merge chains: edge " << edge << ", solution "
-            << *this << ", result " << ch1 << "," << ch2 << std::endl;
+    // debug() << "Merge chains: edge " << edge << ", solution "
+    //         << *this << ", result " << ch1 << "," << ch2 << std::endl;
 }
 
 void Solution::reverse_chain(__int128_t ch) {
