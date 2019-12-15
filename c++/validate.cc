@@ -2,7 +2,7 @@
 #include <cassert>
 
 void validate_solution(Solution solution, Edgelist* edgelist) {
-    std::cout << solution;
+    // std::cout << solution;
     auto k = solution.drivers.size();
     auto L = solution.L;
     auto n = edgelist->size();

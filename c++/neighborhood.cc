@@ -10,13 +10,13 @@ Solution* Reversal::next() {
     if (solution == nullptr) {
         return nullptr;
     }
-    int64_t num_edges = solution->num_edges;
+    __int128_t num_edges = solution->num_edges;
     const auto& orig_edges = solution->chains[0].edges;
     if (j == i + 2 && i > 0) {
         // newsol = *solution;
         // std::cout << *solution << std::endl;
         // std::cout << newsol << std::endl;
-        for (int k = i-1; k < num_edges; k++) {
+        for (__int128_t k = i-1; k < num_edges; k++) {
             newsol.chains[0].edges[k] = solution->chains[0].edges[k];
         }
         // std::cout << newsol << std::endl;
@@ -25,7 +25,7 @@ Solution* Reversal::next() {
     }
     auto& newedges = newsol.chains[0].edges;
     if (j == i + 2) {
-        for(int64_t k = i+1; k < j; k++) {
+        for(__int128_t k = i+1; k < j; k++) {
             std::swap(newedges[k].u, newedges[k].v);
         }
         const auto& v_i = orig_edges[i];
@@ -34,12 +34,12 @@ Solution* Reversal::next() {
         newedges[j].u = v_i.v;
         newedges[i].update_weight(edgelist);
         newedges[j].update_weight(edgelist);
-        std::vector<std::pair<int64_t, int64_t>> driver_map;
+        std::vector<std::pair<__int128_t, __int128_t>> driver_map;
         driver_map.push_back(std::make_pair(v_i.driver, newedges[i].w-v_i.w));
         driver_map.push_back(std::make_pair(v_j.driver, newedges[j].w-v_j.w));
         newsol.update_objective(driver_map);
     } else {
-        int64_t k=j-1;
+        __int128_t k=j-1;
         while (k>i+1) {
             newedges[k] = newedges[k-1];
             k--;
@@ -55,7 +55,7 @@ Solution* Reversal::next() {
         newedges[j].u = v_i.v;
         newedges[i].update_weight(edgelist);
         newedges[j].update_weight(edgelist);
-        std::vector<std::pair<int64_t, int64_t>> driver_map;
+        std::vector<std::pair<__int128_t, __int128_t>> driver_map;
         driver_map.push_back(std::make_pair(v_i.driver, newedges[i].w-v_i.w));
         driver_map.push_back(std::make_pair(v_j.driver, newedges[j].w-v_j.w));
         newsol.update_objective(driver_map);
@@ -93,7 +93,7 @@ Solution* DriverExchange::next() {
     }
 
     std::swap(newedges[i].driver, newedges[j].driver);
-    std::vector<std::pair<int64_t, int64_t>> driver_map;
+    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
     driver_map.push_back(std::make_pair(newedges[i].driver, newedges[j].w-newedges[i].w));
     driver_map.push_back(std::make_pair(newedges[j].driver, newedges[i].w-newedges[j].w));
     newsol.update_objective(driver_map);

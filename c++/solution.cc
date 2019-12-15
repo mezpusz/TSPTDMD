@@ -33,7 +33,7 @@ std::ostream& debug() {
     }
 }
 
-Solution::Solution(int64_t k, int64_t L, int64_t n)
+Solution::Solution(__int128_t k, __int128_t L, __int128_t n)
     : chains()
     , num_edges(0)
     , drivers(k, L)
@@ -62,11 +62,11 @@ Solution& Solution::operator=(const Solution& other)
     return *this;
 }
 
-bool Solution::operator<(const Solution& other) {
+bool Solution::operator<(const Solution& other) const {
     return obj < other.obj;
 }
 
-Chain::Chain(int64_t n, Edge e)
+Chain::Chain(__int128_t n, Edge e)
     : edges()
 {
     edges.reserve(n);
@@ -77,7 +77,7 @@ Chain::Chain(const Chain& other)
     : edges(other.edges)
 {}
 
-Edge::Edge(int64_t u, int64_t v, int64_t d, int64_t w)
+Edge::Edge(__int128_t u, __int128_t v, __int128_t d, __int128_t w)
     : u(u), v(v), driver(d), w(w)
 {}
 
@@ -89,7 +89,7 @@ bool Edge::operator<(const Edge& other) const {
     return w < other.w;
 }
 
-Driver::Driver(int64_t L)
+Driver::Driver(__int128_t L)
     : obj_squared(L*L)
     , obj(L)
 {}
@@ -99,13 +99,13 @@ bool Solution::insert_edge(Edge edge) {
     if (num_edges == 0) {
         chains.push_back(Chain(n, edge));
     } else {
-        std::pair<int64_t, int64_t> ch_pair;
+        std::pair<__int128_t, __int128_t> ch_pair;
         auto res = find_chains(edge, ch_pair);
         if (!res) {
             return false;
         }
-        int64_t ch1 = ch_pair.first;
-        int64_t ch2 = ch_pair.second;
+        __int128_t ch1 = ch_pair.first;
+        __int128_t ch2 = ch_pair.second;
         if (ch1 != -1) {
             if (ch2 == ch1) {
                 return false;
@@ -119,18 +119,18 @@ bool Solution::insert_edge(Edge edge) {
         }
     }
     num_edges++;
-    std::vector<std::pair<int64_t, int64_t>> driver_map;
+    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
     driver_map.push_back(std::make_pair(edge.driver, edge.w));
     update_objective(driver_map);
     return true;
 }
 
-bool Solution::find_chains(Edge edge, std::pair<int64_t, int64_t>& ch_pair) const {
-    int64_t ch1 = -1;
-    int64_t ch2 = -1;
-    for(int64_t i = 0; i < chains.size(); i++) {
+bool Solution::find_chains(Edge edge, std::pair<__int128_t, __int128_t>& ch_pair) const {
+    __int128_t ch1 = -1;
+    __int128_t ch2 = -1;
+    for(__int128_t i = 0; i < chains.size(); i++) {
         const auto& ch = chains[i];
-        for(int64_t j = 0; j < ch.edges.size(); j++) {
+        for(__int128_t j = 0; j < ch.edges.size(); j++) {
             if (ch.edges[j].u == edge.u || ch.edges[j].u == edge.v) {
                 if (j == 0) {
                     if (ch1 == -1) {
@@ -138,7 +138,7 @@ bool Solution::find_chains(Edge edge, std::pair<int64_t, int64_t>& ch_pair) cons
                     } else {
                         ch2 = i;
                     }
-                // edge endpoint64_t is inside chain, we cannot add it
+                // edge endpoint is inside chain, we cannot add it
                 } else {
                     return false;
                 }
@@ -150,7 +150,7 @@ bool Solution::find_chains(Edge edge, std::pair<int64_t, int64_t>& ch_pair) cons
                     } else {
                         ch2 = i;
                     }
-                // edge endpoint64_t is inside chain, we cannot add it
+                // edge endpoint is inside chain, we cannot add it
                 } else {
                     return false;
                 }
@@ -164,7 +164,7 @@ bool Solution::find_chains(Edge edge, std::pair<int64_t, int64_t>& ch_pair) cons
     return true;
 }
 
-void Solution::merge_chains(int64_t ch1, int64_t ch2, Edge edge) {
+void Solution::merge_chains(__int128_t ch1, __int128_t ch2, Edge edge) {
     bool front = false;
     auto* e1 = &chains[ch1].edges;
     auto* e2 = &chains[ch2].edges;
@@ -199,7 +199,7 @@ void Solution::merge_chains(int64_t ch1, int64_t ch2, Edge edge) {
             << *this << ", result " << ch1 << "," << ch2 << std::endl;
 }
 
-void Solution::reverse_chain(int64_t ch) {
+void Solution::reverse_chain(__int128_t ch) {
     for(auto& e : chains[ch].edges) {
         std::swap(e.u, e.v);
     }
@@ -208,7 +208,7 @@ void Solution::reverse_chain(int64_t ch) {
 
 // Returns True if the edge is added to the front
 // and false if it is added to the back
-bool Solution::add_chain_edge(int64_t ch, Edge edge) {
+bool Solution::add_chain_edge(__int128_t ch, Edge edge) {
     auto& e = chains[ch].edges;
     if (e[0].u == edge.u or e[0].u == edge.v) {
         if (e[0].u == edge.u) {
@@ -232,13 +232,13 @@ void Solution::add_loopback_edge(Edge edge) {
     }
     chains[0].edges.push_back(edge);
     num_edges++;
-    std::vector<std::pair<int64_t, int64_t>> driver_map;
+    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
     driver_map.push_back(std::make_pair(edge.driver, edge.w));
     update_objective(driver_map);
 }
 
 bool Solution::can_edge_be_added(Edge edge) const {
-    std::pair<int64_t, int64_t> chain_pair;
+    std::pair<__int128_t, __int128_t> chain_pair;
     auto res = find_chains(edge, chain_pair);
     if (!res) {
         return false;
@@ -250,16 +250,16 @@ bool Solution::can_edge_be_added(Edge edge) const {
     }
 }
 
-int64_t Solution::calculate_objective_with_edge(Edge edge) const {
-    int64_t k = drivers.size();
+__int128_t Solution::calculate_objective_with_edge(Edge edge) const {
+    __int128_t k = drivers.size();
     const auto& driver = drivers[edge.driver];
     auto old_obj = driver.obj_squared;
-    auto new_obj = (driver.obj-edge.w)*(driver.obj-edge.w);
+    auto new_obj = (driver.obj-(__int128_t)edge.w)*(driver.obj-(__int128_t)edge.w);
     return obj + (new_obj-old_obj)/k;
 }
 
-void Solution::update_objective(std::vector<std::pair<int64_t, int64_t>> driver_map) {
-    int64_t k = drivers.size();
+void Solution::update_objective(std::vector<std::pair<__int128_t, __int128_t>> driver_map) {
+    __int128_t k = drivers.size();
     for(auto [d, change] : driver_map) {
         auto& driver = drivers[d];
         obj -= driver.obj_squared/k;

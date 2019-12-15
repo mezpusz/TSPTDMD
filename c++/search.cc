@@ -3,7 +3,7 @@
 
 auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
     auto best = solution;
-    int64_t i = 0;
+    __int128_t i = 0;
     while (true) {
         auto new_sol = neighborhood.next();
         i++;
@@ -20,11 +20,11 @@ auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
     return best;
 };
 
-Solution local_search(Solution solution, Edgelist* edgelist, int64_t iterations)
+Solution local_search(Solution solution, Edgelist* edgelist, __int128_t iterations)
 {
     std::cout << "Starting local search" << std::endl;
     Solution best = solution;
-    int64_t i = 0;
+    __int128_t i = 0;
     while(i < iterations) {
         auto current = best.obj;
         Reversal reversal(best, edgelist);

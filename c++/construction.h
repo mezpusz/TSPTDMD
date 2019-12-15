@@ -3,11 +3,11 @@
 
 Solution construct_randomized_greedy(
     Edgelist* edgelist,
-    int64_t n, int64_t k, int64_t L, int64_t M, float alpha
+    __int128_t n, __int128_t k, __int128_t L, __int128_t M, float alpha
 );
 void add_loopback_edge(
     Edgelist* edgelist,
     Solution& solution,
-    int64_t driver
+    __int128_t driver
 );
-int64_t find_inner_vertex(const Solution& solution, Edge edge);
+__int128_t find_inner_vertex(const Solution& solution, Edge edge);

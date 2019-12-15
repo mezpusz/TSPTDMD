@@ -27,7 +27,8 @@ def edgelist(lines):
     M = L
     for i in range(n):
         M -= weights[i]
-    M = math.ceil((M ** 2 + (k-1)*(L ** 2))/k)
+    M = (M ** 2 + (k-1)*(L ** 2))/k
+    M = int(math.sqrt(M))
     #print("M=" + str(M))
     for u in vertices:
         for v in range(len(u)):

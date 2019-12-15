@@ -10,8 +10,8 @@ struct Reversal : public Neighborhood {
     Solution* solution;
     Solution newsol;
     Edgelist* edgelist;
-    int64_t i = 0;
-    int64_t j = 2;
+    __int128_t i = 0;
+    __int128_t j = 2;
 
     Reversal(Solution& solution, Edgelist* edgelist);
 
@@ -22,8 +22,8 @@ struct DriverExchange : public Neighborhood {
     Solution* solution;
     Solution newsol;
     Edgelist* edgelist;
-    int64_t i = 0;
-    int64_t j = 1;
+    __int128_t i = 0;
+    __int128_t j = 1;
 
     DriverExchange(Solution& solution, Edgelist* edgelist);
 

@@ -3,41 +3,42 @@
 #include <algorithm>
 #include <cmath>
 
-// float proper_round(num):
-//     num_last = str(num)[:str(num).index('.')+2][-1]
-//     if num_last>='5':
-//         return int64_t(num)+1
-//     return int64_t(num)
+__int128_t abs_m(__int128_t a) {
+    if (a < 0) {
+        return -a;
+    }
+    return a;
+}
 
-int64_t distance(int64_t a, int64_t b) {
+__int128_t distance(__int128_t a, __int128_t b) {
     if (a == b) {
         return 0;
     } else if ((a < 0 && b < 0) || (a > 0 && b > 0)) {
         if (a < b) {
-            return (abs(abs(a) - abs(b)));
+            return (abs_m(abs_m(a) - abs_m(b)));
         } else {
-            return -(abs(abs(a) - abs(b)));
+            return -(abs_m(abs_m(a) - abs_m(b)));
         }
     }
-    return std::copysign((abs(a) + abs(b)),b);
+    return std::copysign((int64_t)(abs_m(a) + abs_m(b)),(int64_t)b);
 }
 
-std::tuple<Edgelist, int64_t, int64_t, int64_t> edgelist(std::ifstream& infile) {
+std::tuple<Edgelist, __int128_t, __int128_t, __int128_t> edgelist(std::ifstream& infile) {
     int64_t n, m, k, L;
     infile >> n >> m >> k >> L;
-    Edgelist edgelist(n, std::vector<int64_t>(n, -1));
-    std::vector<int64_t> weights;
-    for(int64_t i = 0; i < m; i++) {
+    Edgelist edgelist(n, std::vector<__int128_t>(n, -1));
+    std::vector<__int128_t> weights;
+    for(__int128_t i = 0; i < m; i++) {
         int64_t u, v, w;
         infile >> u >> v >> w;
         edgelist[u][v] = w;
         edgelist[v][u] = w;
         weights.push_back(w);
     }
-    std::sort(weights.begin(), weights.end(), std::greater<int64_t>());
+    std::sort(weights.begin(), weights.end(), std::greater<__int128_t>());
 
-    int64_t M = L;
-    for(int64_t i = 0; i < n; i++) {
+    __int128_t M = L;
+    for(__int128_t i = 0; i < n; i++) {
         M -= weights[i];
     }
     M = (M * M + (k-1)*(L * L))/k;
@@ -49,36 +50,36 @@ std::tuple<Edgelist, int64_t, int64_t, int64_t> edgelist(std::ifstream& infile) 
             }
         }
     }
-    return std::tuple<Edgelist, int64_t, int64_t, int64_t>(edgelist, k, L, M);
+    return std::tuple<Edgelist, __int128_t, __int128_t, __int128_t>(edgelist, k, L, M);
 }
 
-std::tuple<Edgelist, int64_t, int64_t, int64_t> coords(std::ifstream& infile) {
+std::tuple<Edgelist, __int128_t, __int128_t, __int128_t> coords(std::ifstream& infile) {
     int64_t n, k, L;
     infile >> n >> k >> L;
-    Edgelist edgelist(n, std::vector<int64_t>(n, -1));
-    std::vector<std::pair<int64_t, int64_t>> coordinates;
-    for(int64_t i = 0; i < n; i++) {
+    Edgelist edgelist(n, std::vector<__int128_t>(n, -1));
+    std::vector<std::pair<__int128_t, __int128_t>> coordinates;
+    for(__int128_t i = 0; i < n; i++) {
         int64_t x, y;
         infile >> x >> y;
         coordinates.push_back(std::make_pair(x,y));
     }
-    for(int64_t i = 0; i < n; i++) {
-        for(int64_t j = i+1; j < n; j++) {
+    for(__int128_t i = 0; i < n; i++) {
+        for(__int128_t j = i+1; j < n; j++) {
             auto dist_x = distance(coordinates[i].first, coordinates[j].first);
             dist_x *= dist_x;
             auto dist_y = distance(coordinates[i].second, coordinates[j].second);
             dist_y *= dist_y;
-            auto dist = std::sqrt(dist_x+dist_y);
+            auto dist = std::sqrt((int64_t)(dist_x+dist_y));
             // auto dist_rounded = proper_round(dist);
             auto dist_rounded = dist;
             edgelist[i][j] = dist_rounded;
             edgelist[j][i] = dist_rounded;
         }
     }
-    return std::tuple<Edgelist, int64_t, int64_t, int64_t>(edgelist, k, L, -1);
+    return std::tuple<Edgelist, __int128_t, __int128_t, __int128_t>(edgelist, k, L, -1);
 }
 
-std::tuple<Edgelist, int64_t, int64_t, int64_t> parse_input(std::string filename) {
+std::tuple<Edgelist, __int128_t, __int128_t, __int128_t> parse_input(std::string filename) {
     std::ifstream infile(filename);
     std::string format;
     infile >> format;
