@@ -112,3 +112,9 @@ venv.bak/
 *.pdf
 *.aux
 *.synctex.gz
+
+CMakeFiles
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+out/
