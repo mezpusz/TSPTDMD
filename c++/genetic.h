@@ -30,4 +30,4 @@ Population genetic_algorithm(
     double alpha,
     __int128_t p_size, 
     double sel_factor,
-    __int128_t iterations=10);
+    __int128_t iterations=100);

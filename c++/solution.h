@@ -53,10 +53,7 @@ struct Solution {
     __int128_t obj;
     __int128_t n;
 
-    Solution() = default;
     Solution(__int128_t k, __int128_t L, __int128_t n);
-    Solution(const Solution& other);
-    Solution& operator=(const Solution& other);
     bool operator<(const Solution& other) const;
     bool insert_edge(Edge edge);
     bool find_chains(Edge edge, std::pair<__int128_t, __int128_t>& chains) const;

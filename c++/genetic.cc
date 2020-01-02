@@ -1,10 +1,15 @@
 #include "genetic.h"
 #include "validate.h"
+#include "search.h"
 #include <algorithm>
+#include <cassert>
 
 void validate_population(Edgelist* edgelist, const Population& p) {
     for (const auto& s : p) {
         validate_solution(s, edgelist);
+    }
+    for (auto i = 1; i < p.size(); i++) {
+        assert(p[i-1] < p[i] || p[i-1].obj == p[i].obj);
     }
 }
 
@@ -84,11 +89,12 @@ void rearrange_by_order(Edgelist* edgelist, Solution& specimen, const Solution& 
     const auto& old_edges = sample.chains[0].edges;
     for(__int128_t k = i; k < j+1; k++) {
         auto new_u = old_edges[order[k-i]+i].u;
-        auto new_w = edgelist->at(edges[k-1].u)[new_u];
-        auto old_w = edgelist->at(old_edges[k-1].u)[old_edges[k-1].v];
-        driver_map.push_back(std::make_pair(edges[k-1].driver, new_w-old_w));
-        edges[k-1].v = new_u;
-        edges[k-1].update_weight(edgelist);
+        __int128_t prev = (k==0) ? edges.size()-1 : k-1;
+        auto new_w = edgelist->at(edges[prev].u)[new_u];
+        auto old_w = edgelist->at(old_edges[prev].u)[old_edges[prev].v];
+        driver_map.push_back(std::make_pair(edges[prev].driver, new_w-old_w));
+        edges[prev].v = new_u;
+        edges[prev].update_weight(edgelist);
         edges[k].u = new_u;
     }
     edges[j].update_weight(edgelist);
@@ -96,7 +102,7 @@ void rearrange_by_order(Edgelist* edgelist, Solution& specimen, const Solution& 
     auto old_w = edgelist->at(old_edges[j].u)[old_edges[j].v];
     driver_map.push_back(std::make_pair(edges[j].driver, new_w-old_w));
     specimen.update_objective(driver_map);
-    //validate_solution(specimen, edgelist);
+    // validate_solution(specimen, edgelist);
 }
 
 Population mutate(Edgelist* edgelist, Population p) {
@@ -114,8 +120,9 @@ Solution mutate_specimen(Edgelist* edgelist, const Solution& specimen) {
     __int128_t j = (std::rand() % (new_s.num_edges-i-2)) + (i+1);
     auto& edges = new_s.chains[0].edges;
     const auto& old_edges = specimen.chains[0].edges;
-    edges[i-1].v = old_edges[j].u;
-    edges[i-1].update_weight(edgelist);
+    __int128_t prev = (i==0) ? edges.size()-1 : i-1;
+    edges[prev].v = old_edges[j].u;
+    edges[prev].update_weight(edgelist);
     edges[i].u = old_edges[j].u;
     edges[i].update_weight(edgelist);
     edges[j-1].v = old_edges[i].u;
@@ -124,7 +131,7 @@ Solution mutate_specimen(Edgelist* edgelist, const Solution& specimen) {
     edges[j].update_weight(edgelist);
 
     std::vector<std::pair<__int128_t, __int128_t>> driver_map;
-    driver_map.push_back(std::make_pair(edges[i-1].driver, edgelist->at(edges[i-1].u)[edges[i-1].v]-edgelist->at(old_edges[i-1].u)[old_edges[i-1].v]));
+    driver_map.push_back(std::make_pair(edges[prev].driver, edgelist->at(edges[prev].u)[edges[prev].v]-edgelist->at(old_edges[prev].u)[old_edges[prev].v]));
     driver_map.push_back(std::make_pair(edges[i].driver, edgelist->at(edges[i].u)[edges[i].v]-edgelist->at(old_edges[i].u)[old_edges[i].v]));
     driver_map.push_back(std::make_pair(edges[j-1].driver, edgelist->at(edges[j-1].u)[edges[j-1].v]-edgelist->at(old_edges[j-1].u)[old_edges[j-1].v]));
     driver_map.push_back(std::make_pair(edges[j].driver, edgelist->at(edges[j].u)[edges[j].v]-edgelist->at(old_edges[j].u)[old_edges[j].v]));
@@ -145,16 +152,31 @@ Population genetic_algorithm(
 {
     std::cout << "Starting genetic algorithm" << std::endl;
     auto p = init_population(edgelist, n, k, L, M, alpha, p_size*2);
-    validate_population(edgelist, p);
+    // validate_population(edgelist, p);
     for(__int128_t i = 0; i < iterations; i++) {
         p = do_selection(p, p_size, sel_factor);
-        validate_population(edgelist, p);
+        // validate_population(edgelist, p);
         p = recombine(edgelist, p);
-        validate_population(edgelist, p);
+        // validate_population(edgelist, p);
         p = mutate(edgelist, p);
         validate_population(edgelist, p);
         std::cout << "population best solution is " << p[0].obj << std::endl;
     }
     p = do_selection(p, p_size, sel_factor);
+    std::cout << "Refining final population" << std::endl;
+    for(auto& s : p) {
+        while(true) {
+            s = local_search(s, edgelist);
+            auto new_sol = make_feasible(edgelist, s, M);
+            if (new_sol < s) {
+                std::cout << "Found a more feasible solution " << new_sol.obj << std::endl;
+                s = new_sol;
+            } else {
+                break;
+            }
+        }
+    }
+    std::sort(p.begin(), p.end());
+    validate_population(edgelist, p);
     return p;
 }

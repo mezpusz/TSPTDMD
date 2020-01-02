@@ -27,19 +27,26 @@ int main(int argc, char** argv) {
     Edgelist edgelist;
     int64_t k, L, M;
     std::tie(edgelist, k, L, M) = input;
-    auto p = genetic_algorithm(&edgelist, edgelist.size(), k, L, M, 0.1, 5, 1.5);
-    // auto solution = construct_randomized_greedy(&edgelist, edgelist.size(), k, L, M, 0);
-    // std::cout << "Best solution is: " << solution
-    //           << "with obj: " << std::sqrt(solution.obj) << std::endl;
-    // return 0;
-    for (auto& s : p) {
-        auto n = local_search(s, &edgelist);
-        std::cout << "New solution has obj: " << n.obj << std::endl;
-        p.push_back(n);
+    bool local = false;
+    if (local) {
+        auto solution = construct_randomized_greedy(&edgelist, edgelist.size(), k, L, M, 0);
+        while(true) {
+            solution = local_search(solution, &edgelist);
+            auto new_sol = make_feasible(&edgelist, solution, M);
+            if (new_sol < solution) {
+                std::cout << "Found a more feasible solution " << new_sol.obj << std::endl;
+                solution = new_sol;
+            } else {
+                break;
+            }
+        }
+        write_solution_to_file("try.txt", solution, instance);
+    } else {
+        auto p = genetic_algorithm(&edgelist, edgelist.size(), k, L, M, 0.1, 5, 1.5);
+        std::cout << "Best solution is: " << p[0]
+                << "with obj: " << p[0].obj << std::endl;
+        validate_solution(p[0], &edgelist);
+        write_solution_to_file("try.txt", p[0], instance);
     }
-    std::sort(p.begin(), p.end());
-    std::cout << "Best solution has obj: " << p[0].obj << std::endl;
-    validate_solution(p[0], &edgelist);
-    write_solution_to_file("try.txt", p[0], instance);
     return 0;
 }

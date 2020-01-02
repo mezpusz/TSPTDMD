@@ -42,26 +42,6 @@ Solution::Solution(__int128_t k, __int128_t L, __int128_t n)
     , n(n)
 {}
 
-Solution::Solution(const Solution& other)
-    : Solution(other.drivers.size(), other.L, other.n)
-{
-    chains = other.chains;
-    num_edges = other.num_edges;
-    drivers = other.drivers;
-    obj = other.obj;
-}
-
-Solution& Solution::operator=(const Solution& other)
-{
-    chains = other.chains;
-    num_edges = other.num_edges;
-    drivers = other.drivers;
-    L = other.L;
-    obj = other.obj;
-    n = other.n;
-    return *this;
-}
-
 bool Solution::operator<(const Solution& other) const {
     return obj < other.obj;
 }
@@ -227,7 +207,7 @@ bool Solution::add_chain_edge(__int128_t ch, Edge edge) {
 }
 
 void Solution::add_loopback_edge(Edge edge) {
-    if (chains[0].edges[-1].v == edge.v) {
+    if (chains[0].edges.back().v == edge.v) {
         std::swap(edge.u, edge.v);
     }
     chains[0].edges.push_back(edge);
