@@ -4,4 +4,4 @@
 #include "neighborhood.h"
 #include <functional>
 
-Solution local_search(Solution solution, Edgelist* edgelist, __int128_t iterations=100);
+Solution local_search(Solution solution, Edgelist* edgelist, __int128_t iterations=10);
