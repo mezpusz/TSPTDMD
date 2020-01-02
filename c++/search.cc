@@ -20,6 +20,54 @@ auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
     return best;
 };
 
+Solution search_reversal(Edgelist* edgelist, Solution sol) {
+    auto& e = sol.chains[0].edges;
+    __int128_t min = sol.obj;
+    std::pair<__int128_t, __int128_t> min_pair = std::make_pair<__int128_t, __int128_t>(-1,-1); 
+    for (__int128_t i = 0; i < e.size(); i++) {
+        for (__int128_t j = i+2; j < e.size(); j++) {
+            std::vector<std::pair<__int128_t, __int128_t>> driver_map;
+            driver_map.push_back(std::make_pair(e[i].driver, edgelist->at(e[i].u)[e[j].u]-e[i].w));
+            driver_map.push_back(std::make_pair(e[j].driver, edgelist->at(e[i].v)[e[j].v]-e[j].w));
+            __int128_t k = sol.drivers.size();
+            __int128_t obj = sol.obj;
+            auto drivers = sol.drivers;
+            for(auto [d, change] : driver_map) {
+                auto& driver = drivers[d];
+                obj -= driver.obj_squared/k;
+                driver.obj -= change;
+                driver.obj_squared = driver.obj * driver.obj;
+                obj += driver.obj_squared/k;
+            }
+            if (obj < min) {
+                min = obj;
+                min_pair.first = i;
+                min_pair.second = j;
+            }
+        }
+    }
+    __int128_t i = min_pair.first;
+    __int128_t j = min_pair.second;
+    for(__int128_t k = i+1; k < j; k++) {
+        std::swap(e[k].u, e[k].v);
+    }
+    for(__int128_t k = i+1; k < j-k+i; k++) {
+        std::swap(e[k], e[j-k+i]);
+    }
+    std::swap(e[i].v, e[j].u);
+    __int128_t i_w = e[i].w;
+    __int128_t j_w = e[j].w;
+    e[i].update_weight(edgelist);
+    e[j].update_weight(edgelist);
+    
+    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
+    driver_map.push_back(std::make_pair(e[i].driver, e[i].w-i_w));
+    driver_map.push_back(std::make_pair(e[j].driver, e[j].w-j_w));
+    sol.update_objective(driver_map);
+    std::cout << "Neighborhood is traversed, best obj was " << sol.obj << std::endl;
+    return sol;
+}
+
 Solution local_search(Solution solution, Edgelist* edgelist, __int128_t iterations)
 {
     std::cout << "Starting local search" << std::endl;
@@ -27,8 +75,9 @@ Solution local_search(Solution solution, Edgelist* edgelist, __int128_t iteratio
     __int128_t i = 0;
     while(i < iterations) {
         auto current = best.obj;
-        Reversal reversal(best, edgelist);
-        Solution new_sol = best_improvement(best, reversal);
+        // Reversal reversal(best, edgelist);
+        // Solution new_sol = best_improvement(best, reversal);
+        Solution new_sol = search_reversal(edgelist, best);
 
         if (new_sol < best) {
             debug() << "Best improvement returned new solution with obj "
