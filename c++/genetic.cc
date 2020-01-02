@@ -1,9 +1,16 @@
 #include "genetic.h"
-#include <algorithm> 
+#include "validate.h"
+#include <algorithm>
+
+void validate_population(Edgelist* edgelist, const Population& p) {
+    for (const auto& s : p) {
+        validate_solution(s, edgelist);
+    }
+}
 
 Population init_population(Edgelist* edgelist, __int128_t n,
     __int128_t k, __int128_t L, __int128_t M, double alpha, __int128_t size) {
-    Population p(size);
+    Population p;
     for (__int128_t i = 0; i < size; i++) {
         p.push_back(construct_randomized_greedy(edgelist, n, k, L, M, alpha));
     }
@@ -13,7 +20,7 @@ Population init_population(Edgelist* edgelist, __int128_t n,
 
 Population do_selection(Population p, __int128_t n, double factor) {
     Population s;
-    __int128_t last_specimen = (__int128_t)((n*factor)-1);
+    __int128_t last_specimen = std::min(n, (__int128_t)((n*factor)-1));
     for(__int128_t i = 0; i < n; i++) {
         __int128_t j = std::rand() % last_specimen;
         s.push_back(p[j]);
@@ -75,7 +82,7 @@ void rearrange_by_order(Edgelist* edgelist, Solution& specimen, const Solution& 
     }
     auto& edges = specimen.chains[0].edges;
     const auto& old_edges = sample.chains[0].edges;
-    for(__int128_t k = i; i < j+1; i++) {
+    for(__int128_t k = i; k < j+1; k++) {
         auto new_u = old_edges[order[k-i]+i].u;
         auto new_w = edgelist->at(edges[k-1].u)[new_u];
         auto old_w = edgelist->at(old_edges[k-1].u)[old_edges[k-1].v];
@@ -106,7 +113,7 @@ Solution mutate_specimen(Edgelist* edgelist, const Solution& specimen) {
     __int128_t i = std::rand() % (new_s.num_edges-2);
     __int128_t j = (std::rand() % (new_s.num_edges-i-2)) + (i+1);
     auto& edges = new_s.chains[0].edges;
-    auto& old_edges = specimen.chains[0].edges;
+    const auto& old_edges = specimen.chains[0].edges;
     edges[i-1].v = old_edges[j].u;
     edges[i-1].update_weight(edgelist);
     edges[i].u = old_edges[j].u;
@@ -138,10 +145,14 @@ Population genetic_algorithm(
 {
     std::cout << "Starting genetic algorithm" << std::endl;
     auto p = init_population(edgelist, n, k, L, M, alpha, p_size*2);
+    validate_population(edgelist, p);
     for(__int128_t i = 0; i < iterations; i++) {
         p = do_selection(p, p_size, sel_factor);
+        validate_population(edgelist, p);
         p = recombine(edgelist, p);
+        validate_population(edgelist, p);
         p = mutate(edgelist, p);
+        validate_population(edgelist, p);
         std::cout << "population best solution is " << p[0].obj << std::endl;
     }
     p = do_selection(p, p_size, sel_factor);
