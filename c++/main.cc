@@ -22,14 +22,15 @@ void write_solution_to_file(const std::string& filename, Solution solution, cons
 int main(int argc, char** argv) {
     std::srand(time(nullptr));
 
-    std::string instance = "0010_k2";
+    std::string instance = "rl5915_k2_1";
+    // std::string instance = "2000_k2";
     auto input = parse_input("/home/mezpusz/tuwien/2019W/heuristic/programming1/instances/"+instance+".txt");
     Edgelist edgelist;
     int64_t k, L, M;
     std::tie(edgelist, k, L, M) = input;
     bool local = false;
     if (local) {
-        auto solution = construct_randomized_greedy(&edgelist, edgelist.size(), k, L, M, 0);
+        auto solution = construct_randomized_greedy2(&edgelist, edgelist.size(), k, L, M);
         while(true) {
             solution = local_search(solution, &edgelist);
             auto new_sol = make_feasible(&edgelist, solution, M);

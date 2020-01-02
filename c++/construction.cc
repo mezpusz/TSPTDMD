@@ -77,6 +77,94 @@ Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
     return new_sol;
 }
 
+Solution construct_randomized_greedy2(
+    Edgelist* edgelist,
+    __int128_t n, __int128_t k, __int128_t L, __int128_t M)
+{
+    std::cout << "Constructing solution with randomized greedy approach" << std::endl;
+    Solution sol(k, L, n);
+
+    __int128_t A = (L*k)/n;
+    std::multimap<__int128_t, Edge> candidate_list;
+    for (__int128_t u = 0; u < edgelist->size(); u++) {
+        for (__int128_t v = u+1; v < edgelist->size(); v++) {
+            Edge edge(u, v, 0, edgelist->at(u)[v]);
+            __int128_t obj = diff(A,edge.w);
+            candidate_list.insert(std::make_pair(obj, edge));
+        }
+    }
+    std::set<__int128_t> nope;
+    auto chosen_c = candidate_list.begin();
+
+    while(sol.num_edges < n-1) {
+        __int128_t last_index = 10;
+        __int128_t chosen = (last_index == 0) ? 0 : (std::rand() % last_index);
+        for(__int128_t i = 0; i < chosen; i++) {
+            auto next = chosen_c;
+            next++;
+            if (next == candidate_list.end()) {
+                break;
+            }
+            chosen_c++;
+        }
+        if (nope.count(chosen_c->second.u) == 0 &&
+            nope.count(chosen_c->second.v) == 0) {
+            auto chosen_edge = chosen_c->second;
+            auto driver = std::make_pair<__int128_t, __int128_t>(-1, 0);
+            for(__int128_t l = 0; l < sol.drivers.size(); l++) {
+                chosen_edge.driver = l;
+                __int128_t obj = sol.calculate_objective_with_edge(chosen_edge);
+                if (driver.first == -1 or obj < driver.first) {
+                    driver = std::make_pair(obj, l);
+                }
+            }
+            chosen_edge.driver = driver.second;
+            if(sol.insert_edge(chosen_edge)) {
+                __int128_t v = find_inner_vertex(sol, chosen_edge);
+                if (v == -2) {
+                    nope.insert(chosen_edge.u);
+                    nope.insert(chosen_edge.v);
+                } else if (v != -1) {
+                    nope.insert(v);
+                }
+            }
+        }
+        chosen_c++;
+        if (chosen_c == candidate_list.end()) {
+            for(auto c_it = candidate_list.begin(); c_it != candidate_list.end();) {
+                if (nope.count(c_it->second.u) > 0 || nope.count(c_it->second.v) > 0) {
+                    c_it = candidate_list.erase(c_it);
+                } else {
+                    ++c_it;
+                }
+            }
+            if (candidate_list.size() == 0) {
+                std::cout << "Error: no more candidates" << std::endl;
+                break;
+            }
+            std::cout << "End of list, edges needed " << (n-1-sol.num_edges)
+                      << " excluded nodes " << nope.size()
+                      << " remaining candidates " << candidate_list.size() << std::endl;
+            chosen_c = candidate_list.begin();
+        }
+    }
+
+    auto last_driver = std::make_pair<__int128_t, __int128_t>(-1, 0);
+    for(__int128_t l = 0; l < sol.drivers.size(); l++) {
+        __int128_t last_u = sol.chains[0].edges.back().v;
+        __int128_t last_v = sol.chains[0].edges[0].u;
+        Edge edge(last_u, last_v, l, edgelist->at(last_u)[last_v]);
+        __int128_t obj = sol.calculate_objective_with_edge(edge);
+        if (last_driver.first == -1 or obj < last_driver.first) {
+            last_driver = std::make_pair(obj, l);
+        }
+    }
+    add_loopback_edge(edgelist, sol, last_driver.second);
+    // validate_solution(sol, edgelist);
+    sol = make_feasible(edgelist, sol, M);
+    return sol;
+}
+
 Solution construct_randomized_greedy(
     Edgelist* edgelist,
     __int128_t n, __int128_t k, __int128_t L, __int128_t M, float alpha)

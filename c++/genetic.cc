@@ -17,7 +17,7 @@ Population init_population(Edgelist* edgelist, __int128_t n,
     __int128_t k, __int128_t L, __int128_t M, double alpha, __int128_t size) {
     Population p;
     for (__int128_t i = 0; i < size; i++) {
-        p.push_back(construct_randomized_greedy(edgelist, n, k, L, M, alpha));
+        p.push_back(construct_randomized_greedy2(edgelist, n, k, L, M));
     }
     std::sort(p.begin(), p.end());
     return p;
