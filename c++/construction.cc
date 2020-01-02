@@ -12,6 +12,9 @@ __int128_t diff(__int128_t a, __int128_t b) {
 }
 
 Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
+    if (M == -1) {
+        return sol;
+    }
     Solution new_sol = sol;
     std::set<std::tuple<__int128_t, __int128_t, __int128_t, __int128_t>> tried;
     while (true) {
