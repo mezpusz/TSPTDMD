@@ -1,5 +1,6 @@
 #include "construction.h"
 #include <map>
+#include <set>
 
 #include "validate.h"
 
@@ -8,6 +9,69 @@ __int128_t diff(__int128_t a, __int128_t b) {
         return b-a;
     }
     return a-b;
+}
+
+Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
+    Solution new_sol = sol;
+    std::set<std::tuple<__int128_t, __int128_t, __int128_t, __int128_t>> tried;
+    while (true) {
+        // auto changes = 0;
+        auto& e = new_sol.chains[0].edges;
+        auto found = false;
+        for (__int128_t i = 0; i < e.size(); i++) {
+            if (e[i].w == M) {
+                for (__int128_t j = i+2; j < e.size(); j++) {
+                    if ((edgelist->at(e[j].u)[e[i].u] < M ||
+                        edgelist->at(e[j].v)[e[i].v] < M) &&
+                        tried.count(std::make_tuple(
+                            std::min(e[i].u, e[j].u),
+                            std::max(e[i].u, e[j].u),
+                            std::min(e[i].v, e[j].v),
+                            std::max(e[i].v, e[j].v))) == 0) {
+                        found = true;
+                        tried.insert(std::make_tuple(
+                            std::min(e[i].u, e[j].u),
+                            std::max(e[i].u, e[j].u),
+                            std::min(e[i].v, e[j].v),
+                            std::max(e[i].v, e[j].v)));
+                        for(__int128_t k = i+1; k < j; k++) {
+                            std::swap(e[k].u, e[k].v);
+                        }
+                        for(__int128_t k = i+1; k < j-k+i; k++) {
+                            std::swap(e[k], e[j-k+i]);
+                        }
+                        std::swap(e[i].v, e[j].u);
+                        __int128_t i_w = e[i].w;
+                        __int128_t j_w = e[j].w;
+                        e[i].update_weight(edgelist);
+                        e[j].update_weight(edgelist);
+                     
+                        std::vector<std::pair<__int128_t, __int128_t>> driver_map;
+                        driver_map.push_back(std::make_pair(e[i].driver, e[i].w-i_w));
+                        driver_map.push_back(std::make_pair(e[j].driver, e[j].w-j_w));
+                        new_sol.update_objective(driver_map);
+                        break;
+                    }
+                }
+            }
+        }
+        // std::cout << new_sol << std::endl;
+        // validate_solution(new_sol, edgelist);
+        // std::cout << changes << std::endl;
+        __int128_t count = 0;
+        for (__int128_t i = 0; i < e.size(); i++) {
+            if (e[i].w == M) {
+                count++;
+            }
+        }
+        // std::cout << "Invalid edges: " << count
+        //           << " obj " << new_sol.obj << std::endl;
+        if (count == 0 || !found) {
+            std::cout << "Infeasible edges remaining: " << count << std::endl;
+            break;
+        }
+    }
+    return new_sol;
 }
 
 Solution construct_randomized_greedy(
@@ -118,6 +182,7 @@ Solution construct_randomized_greedy(
     }
     add_loopback_edge(edgelist, sol, last_driver.second);
     // validate_solution(sol, edgelist);
+    sol = make_feasible(edgelist, sol, M);
     return sol;
 }
 
