@@ -17,13 +17,13 @@ auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
             best = *new_sol;
         }
     }
-    std::cout << "Neighborhood is traversed, best obj was " << best.obj << std::endl;
+    // std::cout << "Neighborhood is traversed, best obj was " << best.obj << std::endl;
     return best;
 };
 
 Solution random_neighbor(Edgelist* edgelist, Solution sol, __int128_t dist) {
     for (int d = 0; d < dist; d++) {
-        __int128_t i = std::rand() % sol.num_edges;
+        __int128_t i = std::rand() % (sol.num_edges-2);
         __int128_t j = i + 2 + (std::rand() % (sol.num_edges - i - 2));
         make_reversal(edgelist, sol, i, j);
     }
@@ -58,23 +58,11 @@ Solution search_reversal(Edgelist* edgelist, Solution sol) {
     }
     __int128_t i = min_pair.first;
     __int128_t j = min_pair.second;
-    for(__int128_t k = i+1; k < j; k++) {
-        std::swap(e[k].u, e[k].v);
+    if (i != -1)
+    {
+        make_reversal(edgelist, sol, i, j);
     }
-    for(__int128_t k = i+1; k < j-k+i; k++) {
-        std::swap(e[k], e[j-k+i]);
-    }
-    std::swap(e[i].v, e[j].u);
-    __int128_t i_w = e[i].w;
-    __int128_t j_w = e[j].w;
-    e[i].update_weight(edgelist);
-    e[j].update_weight(edgelist);
-    
-    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
-    driver_map.push_back(std::make_pair(e[i].driver, e[i].w-i_w));
-    driver_map.push_back(std::make_pair(e[j].driver, e[j].w-j_w));
-    sol.update_objective(driver_map);
-    std::cout << "Neighborhood is traversed, best obj was " << sol.obj << std::endl;
+    // std::cout << "Neighborhood is traversed, best obj was " << sol.obj << std::endl;
     return sol;
 }
 

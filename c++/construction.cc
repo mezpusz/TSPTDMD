@@ -2,6 +2,7 @@
 #include <map>
 #include <set>
 
+#include "neighborhood.h"
 #include "validate.h"
 
 __int128_t diff(__int128_t a, __int128_t b) {
@@ -55,7 +56,9 @@ Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
         // std::cout << "Invalid edges: " << count
         //           << " obj " << new_sol.obj << std::endl;
         if (count == 0 || !found) {
-            std::cout << "Infeasible edges remaining: " << count << std::endl;
+            if (count > 0) {
+                std::cout << "Infeasible edges remaining: " << count << std::endl;
+            }
             break;
         }
     }
@@ -82,8 +85,8 @@ Solution construct_randomized_greedy2(
     auto chosen_c = candidate_list.begin();
 
     while(sol.num_edges < n-1) {
-        __int128_t last_index = 10;
-        __int128_t chosen = (last_index == 0) ? 0 : (std::rand() % last_index);
+        __int128_t last_index = 3;
+        __int128_t chosen = std::rand() % last_index;
         for(__int128_t i = 0; i < chosen; i++) {
             auto next = chosen_c;
             next++;
@@ -111,7 +114,14 @@ Solution construct_randomized_greedy2(
                     nope.insert(chosen_edge.v);
                 } else if (v != -1) {
                     nope.insert(v);
+                } else {
+                    chosen_c = candidate_list.erase(chosen_c);
+                    if (chosen_c == candidate_list.end()) {
+                        chosen_c = candidate_list.begin();
+                    }
                 }
+            } else {
+                std::cout << "Could not insert edge" << std::endl;
             }
         }
         chosen_c++;
