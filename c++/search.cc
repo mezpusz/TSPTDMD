@@ -1,5 +1,6 @@
 
 #include "search.h"
+#include "neighborhood.h"
 
 auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
     auto best = solution;
@@ -19,6 +20,15 @@ auto best_improvement = [](Solution& solution, Neighborhood& neighborhood) {
     std::cout << "Neighborhood is traversed, best obj was " << best.obj << std::endl;
     return best;
 };
+
+Solution random_neighbor(Edgelist* edgelist, Solution sol, __int128_t dist) {
+    for (int d = 0; d < dist; d++) {
+        __int128_t i = std::rand() % sol.num_edges;
+        __int128_t j = i + 2 + (std::rand() % (sol.num_edges - i - 2));
+        make_reversal(edgelist, sol, i, j);
+    }
+    return sol;
+}
 
 Solution search_reversal(Edgelist* edgelist, Solution sol) {
     auto& e = sol.chains[0].edges;

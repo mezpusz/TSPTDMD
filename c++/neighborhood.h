@@ -2,6 +2,8 @@
 #pragma once
 #include "solution.h"
 
+void make_reversal(Edgelist* edgelist, Solution& sol, __int128_t i, __int128_t j);
+
 struct Neighborhood {
     virtual Solution* next() = 0;
 };

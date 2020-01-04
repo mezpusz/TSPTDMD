@@ -37,22 +37,7 @@ Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
                             std::max(e[i].u, e[j].u),
                             std::min(e[i].v, e[j].v),
                             std::max(e[i].v, e[j].v)));
-                        for(__int128_t k = i+1; k < j; k++) {
-                            std::swap(e[k].u, e[k].v);
-                        }
-                        for(__int128_t k = i+1; k < j-k+i; k++) {
-                            std::swap(e[k], e[j-k+i]);
-                        }
-                        std::swap(e[i].v, e[j].u);
-                        __int128_t i_w = e[i].w;
-                        __int128_t j_w = e[j].w;
-                        e[i].update_weight(edgelist);
-                        e[j].update_weight(edgelist);
-                     
-                        std::vector<std::pair<__int128_t, __int128_t>> driver_map;
-                        driver_map.push_back(std::make_pair(e[i].driver, e[i].w-i_w));
-                        driver_map.push_back(std::make_pair(e[j].driver, e[j].w-j_w));
-                        new_sol.update_objective(driver_map);
+                        make_reversal(edgelist, new_sol, i, j);
                         break;
                     }
                 }

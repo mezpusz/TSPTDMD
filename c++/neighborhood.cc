@@ -2,6 +2,26 @@
 #include "neighborhood.h"
 #include "validate.h"
 
+void make_reversal(Edgelist* edgelist, Solution& sol, __int128_t i, __int128_t j) {
+    auto& edges = sol.chains[0].edges;
+    for(__int128_t k = i+1; k < j; k++) {
+        std::swap(edges[k].u, edges[k].v);
+    }
+    for(__int128_t k = i+1; k < j-k+i; k++) {
+        std::swap(edges[k], edges[j-k+i]);
+    }
+    std::swap(edges[i].v, edges[j].u);
+    __int128_t i_w = edges[i].w;
+    __int128_t j_w = edges[j].w;
+    edges[i].update_weight(edgelist);
+    edges[j].update_weight(edgelist);
+
+    std::vector<std::pair<__int128_t, __int128_t>> driver_map;
+    driver_map.push_back(std::make_pair(edges[i].driver, edges[i].w-i_w));
+    driver_map.push_back(std::make_pair(edges[j].driver, edges[j].w-j_w));
+    sol.update_objective(driver_map);
+}
+
 Reversal::Reversal(Solution& solution, Edgelist* edgelist)
     : solution(&solution), newsol(solution), edgelist(edgelist)
 {}
