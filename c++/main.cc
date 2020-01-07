@@ -71,7 +71,9 @@ int main(int argc, char** argv) {
         auto best = solution;
         while(iter < kLocalIter) {
             solution = local_search(solution, &edgelist);
+            validate_solution(solution, &edgelist);
             auto new_sol = make_feasible(&edgelist, solution, M);
+            validate_solution(solution, &edgelist);
             if (new_sol < solution) {
                 std::cout << "Found a more feasible solution " << new_sol.obj
                           << " best is: " << best.obj << std::endl;
@@ -88,15 +90,27 @@ int main(int argc, char** argv) {
                           << " and best " << best.obj << ", generating random neighbor" << std::endl;
                 solution = random_neighbor(&edgelist, solution, 4);
                 solution = make_feasible(&edgelist, solution, M);
+                validate_solution(solution, &edgelist);
                 iter++;
             }
         }
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         write_solution_to_file(solution_filename, best, instance);
+        __int128_t count = 0;
+        if (M != -1) {
+            const auto& e = best.chains[0].edges;
+            for (__int128_t i = 0; i < e.size(); i++) {
+                if (e[i].w == M) {
+                    count++;
+                }
+            }
+        }
+        std::cout << "Best was " << (__int128_t)(std::sqrt((double)best.obj)) << std::endl;
         std::ofstream file(result_filename, std::ios_base::app);
-        file << instance << " best solution: " << best.obj << ", iterations: " << iter
-             << " best time " << std::chrono::duration_cast<std::chrono::milliseconds>(best_end - begin).count() << " µs, total time "
-             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " µs"
+        file << instance << " best solution: " << (__int128_t)(std::sqrt((double)best.obj))
+             << ", infeasible edges: " << count << ", iterations: " << iter
+             << ", best time " << std::chrono::duration_cast<std::chrono::milliseconds>(best_end - begin).count() << " ms, total time "
+             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
              << std::endl;
     } else {
         auto p = genetic_algorithm(&edgelist, edgelist.size(), k, L, M, 0.1, 5, 1.5);

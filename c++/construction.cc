@@ -45,7 +45,7 @@ Solution make_feasible(Edgelist* edgelist, Solution sol, __int128_t M) {
             }
         }
         // std::cout << new_sol << std::endl;
-        // validate_solution(new_sol, edgelist);
+        validate_solution(new_sol, edgelist);
         // std::cout << changes << std::endl;
         __int128_t count = 0;
         for (__int128_t i = 0; i < e.size(); i++) {
@@ -155,7 +155,7 @@ Solution construct_randomized_greedy2(
         }
     }
     add_loopback_edge(edgelist, sol, last_driver.second);
-    // validate_solution(sol, edgelist);
+    validate_solution(sol, edgelist);
     sol = make_feasible(edgelist, sol, M);
     return sol;
 }

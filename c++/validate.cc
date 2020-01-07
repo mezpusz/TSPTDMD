@@ -2,6 +2,13 @@
 #include <cassert>
 #include <set>
 
+__int128_t diff2(__int128_t a, __int128_t b) {
+    if (a < b) {
+        return b-a;
+    }
+    return a-b;
+}
+
 void validate_solution(Solution solution, Edgelist* edgelist) {
     // std::cout << solution;
     auto k = solution.drivers.size();
@@ -33,17 +40,16 @@ void validate_solution(Solution solution, Edgelist* edgelist) {
         // drivers[e.driver]-=edgelist[e.u][e.v]
         vertices.insert(e[i].u);
     }
-    // obj = 0
-    // for d in drivers:
-    //     obj += d**2
+    __int128_t obj = 0;
+    for (const auto& d : solution.drivers) {
+        obj += d.obj;
+    }
     for(__int128_t i = 0; i < n; i++) {
         assert(vertices.count(i) == 1);
     }
-    // obj /= k
-    // calculated = int64_t(obj)
-    // from_solution = solution.obj
-    // print("Objective in solution is: {}, calculated: {}".format(from_solution, calculated))
-    // if calculated == 0 and from_solution == 0 or calculated < 10 and from_solution < 10:
-    //     return
-    // assert(0.1 > abs(calculated-from_solution)/max(calculated, from_solution))
+    obj /= k;
+    if ((obj == 0 && solution.obj == 0) || (obj < 10 || solution.obj < 10)) {
+        return;
+    }
+    assert(0.1 > diff2(obj,solution.obj)/std::max(obj, solution.obj));
 }

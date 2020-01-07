@@ -3,6 +3,15 @@
 #include <algorithm>
 #include <cmath>
 
+__int128_t proper_round(double num) {
+    __int128_t whole = num;
+    num -= (double)whole;
+    if (num >= 0.5) {
+        return whole+1;
+    }
+    return whole;
+}
+
 __int128_t abs_m(__int128_t a) {
     if (a < 0) {
         return -a;
@@ -70,8 +79,8 @@ std::tuple<Edgelist, __int128_t, __int128_t, __int128_t> coords(std::ifstream& i
             auto dist_y = distance(coordinates[i].second, coordinates[j].second);
             dist_y *= dist_y;
             auto dist = std::sqrt((int64_t)(dist_x+dist_y));
-            // auto dist_rounded = proper_round(dist);
-            auto dist_rounded = dist;
+            auto dist_rounded = proper_round(dist);
+            // auto dist_rounded = dist;
             edgelist[i][j] = dist_rounded;
             edgelist[j][i] = dist_rounded;
         }

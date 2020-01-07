@@ -235,16 +235,16 @@ __int128_t Solution::calculate_objective_with_edge(Edge edge) const {
     const auto& driver = drivers[edge.driver];
     auto old_obj = driver.obj_squared;
     auto new_obj = (driver.obj-(__int128_t)edge.w)*(driver.obj-(__int128_t)edge.w);
-    return obj + (new_obj-old_obj)/k;
+    return obj + int_div((new_obj-old_obj),k);
 }
 
 void Solution::update_objective(std::vector<std::pair<__int128_t, __int128_t>> driver_map) {
     __int128_t k = drivers.size();
     for(auto [d, change] : driver_map) {
         auto& driver = drivers[d];
-        obj -= driver.obj_squared/k;
+        auto old_obj = driver.obj_squared;
         driver.obj -= change;
         driver.obj_squared = driver.obj * driver.obj;
-        obj += driver.obj_squared/k;
+        obj += int_div((driver.obj_squared-old_obj), k);
     }
 }

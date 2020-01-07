@@ -7,6 +7,17 @@
 
 std::ostream& debug();
 
+inline __int128_t int_div(__int128_t a, __int128_t b) {
+    auto quot = a/b;
+    auto rem = a%b;
+    if (quot < 0 && rem*2 >= b) {
+        quot -= 1;
+    } else if (rem*2 >= b) {
+        quot += 1;
+    }
+    return quot;
+}
+
 inline std::ostream& operator<<(std::ostream& out, __int128_t val) {
     std::string str;
     do {

@@ -44,10 +44,10 @@ Solution search_reversal(Edgelist* edgelist, Solution sol) {
             auto drivers = sol.drivers;
             for(auto [d, change] : driver_map) {
                 auto& driver = drivers[d];
-                obj -= driver.obj_squared/k;
+                auto old_obj = driver.obj_squared;
                 driver.obj -= change;
                 driver.obj_squared = driver.obj * driver.obj;
-                obj += driver.obj_squared/k;
+                obj += int_div((driver.obj_squared-old_obj), k);
             }
             if (obj < min) {
                 min = obj;
