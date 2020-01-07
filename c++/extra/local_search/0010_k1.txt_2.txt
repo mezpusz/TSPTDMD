@@ -1,0 +1,1 @@
+0010_k1 best solution: 105, infeasible edges: 0, iterations: 100, best time 2 µs, total time 5 µs
