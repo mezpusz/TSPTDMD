@@ -1,0 +1,1 @@
+rl5915_k1_1 best solution: 554131, infeasible edges: 0, iterations: 20, best time 921163 ms, total time 921164 ms

@@ -1,0 +1,1 @@
+a280_k4_2 best solution: 7, infeasible edges: 0, iterations: 100, best time 485 ms, total time 7685 ms

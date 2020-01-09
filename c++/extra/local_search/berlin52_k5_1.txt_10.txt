@@ -1,0 +1,1 @@
+berlin52_k5_1 best solution: 25, infeasible edges: 0, iterations: 100, best time 79 ms, total time 384 ms
