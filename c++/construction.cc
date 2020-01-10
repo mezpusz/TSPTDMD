@@ -121,7 +121,7 @@ Solution construct_randomized_greedy2(
                     }
                 }
             } else {
-                std::cout << "Could not insert edge" << std::endl;
+                // std::cout << "Could not insert edge" << std::endl;
             }
         }
         chosen_c++;
