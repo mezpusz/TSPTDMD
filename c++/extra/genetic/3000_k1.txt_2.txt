@@ -1,0 +1,1 @@
+3000_k1 best solution: 23829887349, infeasible edges: 10, iterations: 0, best time 122436 ms, total time 122436 ms

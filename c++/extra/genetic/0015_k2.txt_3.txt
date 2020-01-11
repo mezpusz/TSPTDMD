@@ -1,0 +1,1 @@
+0015_k2 best solution: 1350942, infeasible edges: 0, iterations: 0, best time 9 ms, total time 9 ms

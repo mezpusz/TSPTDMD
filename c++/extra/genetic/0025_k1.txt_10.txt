@@ -1,0 +1,1 @@
+0025_k1 best solution: 4101922, infeasible edges: 1, iterations: 0, best time 20 ms, total time 20 ms

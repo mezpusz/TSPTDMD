@@ -1,0 +1,1 @@
+1500_k2 best solution: 3343839038, infeasible edges: 7, iterations: 0, best time 74985 ms, total time 74985 ms

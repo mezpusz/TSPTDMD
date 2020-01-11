@@ -1,0 +1,1 @@
+a280_k2_1 best solution: 687, infeasible edges: 0, iterations: 0, best time 742 ms, total time 742 ms
