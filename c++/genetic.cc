@@ -28,6 +28,9 @@ Population do_selection(Population p, __int128_t n, double factor) {
     __int128_t last_specimen = std::min(n, (__int128_t)((n*factor)-1));
     for(__int128_t i = 0; i < n; i++) {
         __int128_t j = std::rand() % last_specimen;
+        j *= j;
+        j /= last_specimen;
+        // __int128_t j = 0;
         s.push_back(p[j]);
         p.erase(p.begin() + j);
         last_specimen--;
@@ -55,7 +58,7 @@ Population cross(Edgelist* edgelist, const Solution& spec1, const Solution& spec
     p.push_back(spec1);
     p.push_back(spec2);
     __int128_t i = std::rand() % (spec1.num_edges-2);
-    __int128_t j = (std::rand() % (spec1.num_edges-i-2)) + (i+1);
+    __int128_t j = (std::rand() % std::min((__int128_t)3, (spec1.num_edges-i-2))) + (i+1);
     auto order1 = get_order(spec1, i, j);
     auto order2 = get_order(spec2, i, j);
     rearrange_by_order(edgelist, p[0], spec1, order2, i, j);
@@ -106,7 +109,7 @@ void rearrange_by_order(Edgelist* edgelist, Solution& specimen, const Solution& 
 }
 
 Population mutate(Edgelist* edgelist, Population p) {
-    Population m;
+    Population m = p;
     for(const auto& s : p) {
         m.push_back(mutate_specimen(edgelist, s));
     }

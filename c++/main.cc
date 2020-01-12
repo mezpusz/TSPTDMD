@@ -93,6 +93,13 @@ int main(int argc, char** argv) {
                 validate_solution(solution, &edgelist);
                 iter++;
             }
+            if (std::chrono::duration_cast<std::chrono::seconds>(
+                    std::chrono::steady_clock::now() - begin
+                ).count() > 15*60)
+            {
+                std::cout << "Time limit reached, exiting" << std::endl;
+                break;
+            }
         }
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         write_solution_to_file(solution_filename, best, instance);
@@ -117,6 +124,25 @@ int main(int argc, char** argv) {
         std::cout << "Best solution is: " << p[0]
                 << "with obj: " << p[0].obj << std::endl;
         validate_solution(p[0], &edgelist);
+
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        best_end = std::chrono::steady_clock::now();
+        __int128_t count = 0;
+        if (M != -1) {
+            const auto& e = p[0].chains[0].edges;
+            for (__int128_t i = 0; i < e.size(); i++) {
+                if (e[i].w == M) {
+                    count++;
+                }
+            }
+        }
+        std::cout << "Best was " << (__int128_t)(std::sqrt((double)p[0].obj)) << std::endl;
+        std::ofstream file(result_filename, std::ios_base::app);
+        file << instance << " best solution: " << (__int128_t)(std::sqrt((double)p[0].obj))
+             << ", infeasible edges: " << count << ", iterations: " << iter
+             << ", best time " << std::chrono::duration_cast<std::chrono::milliseconds>(best_end - begin).count() << " ms, total time "
+             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
+             << std::endl;
         write_solution_to_file(solution_filename, p[0], instance);
     }
     return 0;
