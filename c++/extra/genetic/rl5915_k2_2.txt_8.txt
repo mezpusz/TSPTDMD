@@ -1,0 +1,1 @@
+rl5915_k2_2 best solution: 176930, infeasible edges: 0, iterations: 0, best time 635894 ms, total time 635894 ms

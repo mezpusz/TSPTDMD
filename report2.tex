@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage[legalpaper, margin=1in]{geometry}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{algorithm}
@@ -13,6 +14,9 @@
 \author{Marton Hajdu, 11849197}
 \begin{document}
 \maketitle
+\section*{Getting started}
+Relevant parts of the project have been rewritten in C++ in order to make it faster and more robust. Some issues regarding the rounding and integer representation were solved to get the same environment for calculations as in the Python project. Therefore only the genetic algorithm and the hybrid algorithm can be found in the project.\medskip\\
+The new project is under the "c++" folder which also contains the results in "c++/results" subfolder. To run the project, on can run the script "run.sh" or manually call "cmake . \&\& make" from the root folder. The executable can be run with "out/tsptdmd [input] [result-file] [additional-result-file]" command. 
 \section*{Genetic algorithm}
 The solutions are encoded simply as permutations (this was already done so no actual encoding happens). The population consists of 5 specimens. An initial population of 10 specimens is generated from which only the better solutions are selected (the fitness is the objective value). The crossover operator selects randomly a less than 4 long sequence of vertices in both parents and orders them based on the other parent's sequence ordering. The mutation operator swaps two vertices in the tour randomly. The mutation is done to all specimens in the population. Overall, a 100 iterations (generations) are made. In the end a local search is done on the whole population.
 \section*{Hybrid approach}
@@ -45,9 +49,9 @@ A local search with best improvement is done first with reversal (2-opt) and the
 \section*{Generating a random neighbor}
 After getting stuck in a local optimum, the algorithm generates a neighbor of the current solution with the 2-opt exchange by consecutively applying it $k$ times. $k$ is set to 4 currently.
 \section*{Setup for experiments}
-The experimental setup that created the results used my home computer. The algorithm was set to terminate after reaching a 15 minute running time.
+The experimental setup that created the results used my home computer. The algorithm was set to terminate after reaching a 15 minute running time. Each heuristic was run with each input 10 times.
 \section*{Results}
-Note that we show here only the results that are present in TUWEL as the best value for each algorithm. All results including the different combinations for local search can be found in the source code attached.
+The columns show averages and standard deviation of the 10 runs for each instance. An additional measure of infeasible edges was added to measure the performance of instances where there could be infeasible solutions. All results can be found attached to the source code.
 \small
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|}
@@ -96,7 +100,11 @@ berlin52\_k4\_1 & 244.70 & 41.66 & 0 & 0 & 42.30 & 21.93 & 0 & 0\\
 berlin52\_k4\_2 & 4.50 & .50 & 0 & 0 & 4.70 & .45 & 0 & 0\\
 berlin52\_k5\_1 & 251.00 & 45.60 & 0 & 0 & 32.30 & 4.07 & 0 & 0\\
 berlin52\_k5\_2 & 5.90 & .70 & 0 & 0 & 5.10 & .53 & 0 & 0\\
-rl5915\_k1\_1 & 65106.70 & 185296.91 & 0 & 0 & 560280.40 & 14826.84 & 0 & 0\\
+rl5915\_k1\_1 & 655498.20 & 8191.88 & 0 & 0 & 560280.40 & 14826.84 & 0 & 0\\
+rl5915\_k1\_2 & 355051.00 & 7252.20 & 0 & 0 & 266141.60 & 12141.47 & 0 & 0\\
+rl5915\_k2\_1 & 328042.20 & 3612.17 & 0 & 0 & 277239.00 & 3186.52 & 0 & 0\\
+rl5915\_k2\_2 & 179491.10 & 4378.46 & 0 & 0 & 138010.60 & 5150.40 & 0 & 0\\
+
 \hline
 \end{tabular}
 \end{center}
